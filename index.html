@@ -1,0 +1,1349 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OMSZ dolgozói portál</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#111827;
+      --panel-2:#0f172a;
+      --muted:#94a3b8;
+      --text:#e5e7eb;
+      --line:#1f2937;
+      --green:#10b981;
+      --green-2:#059669;
+      --red:#ef4444;
+      --amber:#f59e0b;
+      --card:#ffffff;
+      --card-text:#0f172a;
+      --soft:#f8fafc;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#e2e8f0;color:#0f172a;
+    }
+    .hidden{display:none!important}
+    .app{min-height:100vh}
+    .login{
+      min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;background:linear-gradient(135deg,#f8fafc,#ffffff,#ecfdf5);
+    }
+    .login-left{
+      background:linear-gradient(180deg,#020617,#0f172a);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:center;
+    }
+    .login-right{display:flex;align-items:center;justify-content:center;padding:24px}
+    .login-card{
+      width:min(520px,100%);background:#fff;border-radius:28px;padding:32px;box-shadow:0 20px 50px rgba(15,23,42,.12);
+    }
+    h1,h2,h3,p{margin:0}
+    .muted{color:#64748b}
+    .feature{
+      margin-top:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.04)
+    }
+    .mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+    .btn{
+  border:none;
+  border-radius:16px;
+  padding:12px 16px;
+  font-weight:700;
+  cursor:pointer;
+
+  transition:
+    background-color .25s ease,
+    color .25s ease,
+    transform .15s ease,
+    box-shadow .25s ease;
+}
+
+/* hover */
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .10);
+}
+
+/* kattintás */
+.btn:active{
+  transform: scale(.97);
+}
+
+.btn-primary{
+  background:var(--green);
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:var(--green-2);
+}
+
+.btn-secondary{
+  background:#fff;
+  color:#0f172a;
+  border:1px solid #cbd5e1;
+}
+
+.btn-secondary:hover{
+  background:#f8fafc;
+}
+
+.btn-dark{
+  background:#0f172a;
+  color:#fff;
+}
+
+.btn-dark:hover{
+  background:#1e293b;
+}
+
+.btn.active{
+  box-shadow: 0 10px 22px rgba(15,23,42,.18);
+  transform: translateY(-1px);
+}
+    .input, .select, .textarea{
+      width:100%;border:1px solid #cbd5e1;border-radius:14px;padding:12px 14px;font:inherit;background:#fff;
+    }
+    .textarea{min-height:140px;resize:vertical}
+    .field{margin-bottom:14px}
+    .label{display:block;margin-bottom:6px;font-size:14px;font-weight:600;color:#334155}
+    .small{font-size:13px}
+    .error,.success,.warn{
+      padding:12px 14px;border-radius:14px;font-size:14px;margin-top:12px
+    }
+    .error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+    .success{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+    .warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+    .shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{
+      background:linear-gradient(180deg,#020617,#111827);color:#fff;padding:18px;border-right:1px solid #1f2937;display:flex;flex-direction:column
+    }
+    .brand{
+      padding:18px;border-bottom:1px solid #1f2937;margin-bottom:16px
+    }
+    .user-card{
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:16px;margin-bottom:16px
+    }
+    .nav-btn{
+  position: relative;
+  width:100%;
+  background: transparent;
+  color:#cbd5e1;
+  border:none;
+  text-align:left;
+  border-radius:18px;
+  padding:14px 18px;
+  margin-bottom:10px;
+  cursor:pointer;
+  font-weight:700;
+  overflow:hidden;
+
+  transition:
+    background-color .28s ease,
+    color .28s ease,
+    transform .18s ease,
+    box-shadow .28s ease,
+    padding-left .28s ease;
+}
+
+/* bal oldali csúszó highlight */
+.nav-btn::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:10px;
+  bottom:10px;
+  width:4px;
+  border-radius:999px;
+  background:#34d399;
+  transform:scaleY(0);
+  opacity:0;
+  transition:
+    transform .25s ease,
+    opacity .25s ease,
+    left .25s ease;
+}
+
+/* finom belső fény */
+.nav-btn::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:18px;
+  background:linear-gradient(90deg, rgba(16,185,129,.12), rgba(16,185,129,0));
+  opacity:0;
+  transition:opacity .28s ease;
+  pointer-events:none;
+}
+
+.nav-btn:hover{
+  background:#0f172a;
+  color:#fff;
+  padding-left:24px;
+  transform:translateX(4px);
+  box-shadow:0 10px 22px rgba(2,6,23,.18);
+}
+
+.nav-btn:hover::before{
+  transform:scaleY(1);
+  opacity:1;
+}
+
+.nav-btn:hover::after{
+  opacity:1;
+}
+
+.nav-btn:active{
+  transform:translateX(2px) scale(.985);
+}
+
+/* aktív állapot */
+.nav-btn.active{
+  background:linear-gradient(135deg, #10b981, #059669);
+  color:#fff;
+  padding-left:24px;
+  box-shadow:
+    0 12px 26px rgba(16,185,129,.28),
+    inset 0 1px 0 rgba(255,255,255,.18);
+}
+
+.nav-btn.active::before{
+  transform:scaleY(1);
+  opacity:1;
+  background:#ffffff;
+}
+
+.nav-btn.active::after{
+  opacity:.22;
+  background:linear-gradient(90deg, rgba(255,255,255,.28), rgba(255,255,255,0));
+}
+    .nav-btn.active{background:var(--green);color:#fff}
+    .nav-btn:hover{background:#0f172a;color:#fff}
+    .logout-wrap{margin-top:auto}
+    .content{padding:28px}
+    .topbar{
+      background:#fff;border-radius:24px;padding:18px 20px;box-shadow:0 4px 20px rgba(15,23,42,.05);display:flex;justify-content:space-between;align-items:center;gap:14px
+    }
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-size:13px;font-weight:700;background:#e2e8f0;color:#0f172a
+    }
+    .page{margin-top:24px}
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .card{
+      background:#fff;border-radius:22px;padding:18px;box-shadow:0 4px 20px rgba(15,23,42,.05)
+    }
+    .card-title{font-size:14px;color:#64748b;margin-bottom:8px}
+    .card-value{font-size:24px;font-weight:800}
+    .grid-2{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .info-box{padding:14px;border-radius:16px;background:#f8fafc}
+    .section-title{font-size:28px;font-weight:800;margin-bottom:6px}
+    .section-desc{color:#64748b;margin-bottom:20px}
+    .row{display:flex;gap:12px}
+    .row > *{flex:1}
+    .list-item{
+      border:1px solid #e2e8f0;border-radius:16px;padding:14px;margin-bottom:10px;background:#fff;cursor:pointer
+    }
+    .list-item:hover{background:#f8fafc}
+    .list-item.active{border-color:#86efac;background:#f0fdf4}
+    .modal{
+      position:fixed;inset:0;background:rgba(2,6,23,.55);display:flex;align-items:center;justify-content:center;padding:20px
+    }
+    .modal-card{
+      width:min(760px,100%);background:#fff;border-radius:28px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)
+    }
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left;font-size:14px}
+    @media (max-width: 1100px){
+      .cards{grid-template-columns:repeat(2,1fr)}
+      .grid-2{grid-template-columns:1fr}
+    }
+    @media (max-width: 850px){
+      .login{grid-template-columns:1fr}
+      .shell{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .cards{grid-template-columns:1fr}
+      .info-grid{grid-template-columns:1fr}
+      .content{padding:16px}
+      .topbar{flex-direction:column;align-items:flex-start}
+
+.request-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.status-pending{
+  background:#f3f4f6;
+  color:#6b7280;
+}
+
+.status-approved{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-rejected{
+  background:#fee2e2;
+  color:#991b1b;
+}
+    }
+  </style>
+</head>
+<body>
+  <div id="loginView" class="login">
+    <div class="login-left">
+      <div style="font-size:12px;letter-spacing:.18em;color:#94a3b8;text-transform:uppercase">Országos Mentőszolgálat</div>
+      <h1 style="font-size:48px;line-height:1.05;margin-top:14px">Dolgozói portál</h1>
+      <p style="color:#cbd5e1;margin-top:18px;max-width:560px;font-size:18px">
+        Könnyű szolgálati áttekintés minden életmentőnek. A WSS Roleplay szerveréhez készült, nem az omsz hivatalos weboldala.
+      </p>
+      <div class="feature">Átlátható felület.</div>
+      <div class="feature">Könnyű kezelés.</div>
+      <div class="feature">Gyors Feldolgozás.</div>
+      <div class="feature">Életmentők online fő adatkezelési felülete.</div>
+    </div>
+
+    <div class="login-right">
+      <div class="login-card">
+        <h2 style="font-size:30px">Bejelentkezés</h2>
+        <p class="muted" style="margin-top:8px">Dolgozói vagy vezetőségi portál.</p>
+
+        <div class="mode-switch">
+          <button id="modeUserBtn" class="btn btn-dark">Mentő Dolgozó</button>
+          <button id="modeAdminBtn" class="btn btn-secondary">Vezetőség</button>
+        </div>
+
+        <div id="userLoginFields">
+          <div class="field">
+            <label class="label">Felhasználónév</label>
+            <input id="employeeCode" class="input" placeholder="Pl. OMSZ8421" />
+          </div>
+          <div class="field">
+            <label class="label">Jelszó</label>
+            <input id="employeePassword" class="input" type="password" placeholder="Jelszó" />
+          </div>
+          <button id="userLoginBtn" class="btn btn-primary" style="width:100%">Belépés</button>
+        </div>
+
+        <div id="adminLoginFields" class="hidden">
+          <div class="field">
+            <label class="label">Vezetőség email</label>
+            <input id="adminEmail" class="input" value="admin@omsz.local" />
+          </div>
+          <div class="field">
+            <label class="label">Jelszó</label>
+            <input id="adminPassword" class="input" type="password" placeholder="Jelszó" />
+          </div>
+          <button id="adminLoginBtn" class="btn btn-primary" style="width:100%">Belépés vezetőségi felületre</button>
+        </div>
+
+        <div id="loginMessage"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="appView" class="app hidden">
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div style="font-size:12px;letter-spacing:.18em;color:#94a3b8;text-transform:uppercase" id="sidebarSubtitle">OMSZ</div>
+          <div style="font-size:24px;font-weight:800;margin-top:8px" id="sidebarTitle">Dolgozói portál</div>
+        </div>
+
+        <div class="user-card">
+          <div style="font-size:18px;font-weight:800" id="sidebarUserName">-</div>
+          <div style="color:#94a3b8;margin-top:4px" id="sidebarUserRole">-</div>
+          <div style="margin-top:10px"><span class="badge" id="sidebarStatus">-</span></div>
+        </div>
+
+        <div id="userNav">
+          <button class="nav-btn active" data-page="overview">Áttekintés</button>
+          <button class="nav-btn" data-page="service">Szolgálati idő</button>
+          <button class="nav-btn" data-page="reports">Jelentések</button>
+          <button class="nav-btn" data-page="vehicle">Jármű igénylés</button>
+        </div>
+
+        <div id="adminNav" class="hidden">
+          <button class="nav-btn active" data-page="admin-users">Felhasználók</button>
+          <button class="nav-btn" data-page="admin-vehicles">Jármű igénylések</button>
+        </div>
+
+        <div class="logout-wrap">
+          <button id="logoutBtn" class="btn btn-danger" style="width:100%">Kijelentkezés</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <div class="topbar">
+          <div>
+            <div class="small muted" id="topbarType">Belső rendszer</div>
+            <div style="font-size:28px;font-weight:800;margin-top:2px" id="topbarGreeting">Üdv!</div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <span class="badge" id="stationBadge">-</span>
+            <span class="badge" id="timerBadge">Automatikus kijelentkezés: 30:00</span>
+          </div>
+        </div>
+
+        <div id="pageRoot" class="page"></div>
+      </main>
+    </div>
+  </div>
+
+  <div id="reportModal" class="modal hidden">
+    <div class="modal-card">
+      <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start">
+        <div>
+          <h3 id="modalTitle" style="font-size:28px"></h3>
+          <p id="modalMeta" class="muted" style="margin-top:6px"></p>
+        </div>
+        <button id="closeModalBtn" class="btn btn-secondary">Bezárás</button>
+      </div>
+      <div id="modalContent" style="margin-top:18px;padding:18px;border-radius:18px;background:#f8fafc;white-space:pre-wrap"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = 'https://nclapoakwbkiszrxbvsl.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_v3HZxIrskobUbRXniCDwaA_yjQHvRKc';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const state = {
+    mode: 'user',
+    page: 'overview',
+    profile: null,
+    user: null,
+    selectedAdminUser: null,
+    lastActivity: Date.now(),
+    timer: null,
+    modalReport: null
+  };
+
+  let bootstrapping = false;
+  let activityBound = false;
+
+  const el = (id) => document.getElementById(id);
+  const qsa = (s) => Array.from(document.querySelectorAll(s));
+
+  function setMode(mode) {
+    state.mode = mode;
+
+    el('userLoginFields').classList.toggle('hidden', mode !== 'user');
+    el('adminLoginFields').classList.toggle('hidden', mode !== 'admin');
+
+    el('modeUserBtn').className = 'btn ' + (mode === 'user' ? 'btn-dark' : 'btn-secondary');
+    el('modeAdminBtn').className = 'btn ' + (mode === 'admin' ? 'btn-dark' : 'btn-secondary');
+
+    clearLoginMessage();
+  }
+
+  function setLoginMessage(type, text) {
+    el('loginMessage').innerHTML = `<div class="${type}">${text}</div>`;
+  }
+
+  function clearLoginMessage() {
+    el('loginMessage').innerHTML = '';
+  }
+
+  function codeToEmail(code) {
+    const normalized = String(code).trim().replace(/\s+/g, '');
+    return normalized.includes('@')
+      ? normalized.toLowerCase()
+      : `${normalized.toUpperCase()}@omsz.local`;
+  }
+
+  async function signInUser() {
+    try {
+      const code = el('employeeCode').value.trim();
+      const password = el('employeePassword').value.trim();
+
+      if (!code || !password) {
+        return setLoginMessage('error', 'Add meg a belépési kódot és a jelszót.');
+      }
+
+      const result = await sb.auth.signInWithPassword({
+        email: codeToEmail(code),
+        password
+      });
+
+      if (result.error) throw result.error;
+    } catch (err) {
+      console.error('signInUser hiba:', err);
+      setLoginMessage('error', err.message || 'Sikertelen dolgozói bejelentkezés.');
+    }
+  }
+
+  async function loginAdmin() {
+    try {
+      const email = el('adminEmail').value.trim();
+      const password = el('adminPassword').value;
+
+      const result = await sb.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (result.error) throw result.error;
+    } catch (err) {
+      console.error('loginAdmin hiba:', err);
+      setLoginMessage('error', err.message || 'Sikertelen admin belépés.');
+    }
+  }
+
+  async function bootstrapApp() {
+    if (bootstrapping) return;
+    bootstrapping = true;
+
+    try {
+      const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      const user = sessionData?.session?.user;
+      if (!user) {
+        showLogin();
+        return;
+      }
+
+      state.user = user;
+      state.profile = await fetchMyProfile();
+
+      showApp();
+      startAutoLogout();
+      bindNavByRole();
+      await renderCurrentPage();
+    } catch (err) {
+      console.error('bootstrapApp hiba:', err);
+      setLoginMessage('error', err.message || 'Hiba az alkalmazás indításakor.');
+    } finally {
+      bootstrapping = false;
+    }
+  }
+
+  async function fetchMyProfile() {
+    const { data, error } = await sb
+      .from('profiles')
+      .select('*')
+      .eq('id', state.user.id)
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  async function fetchMyServiceLogs() {
+    const { data, error } = await sb
+      .from('service_logs')
+      .select('*')
+      .eq('employee_id', state.user.id)
+      .order('service_date', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function fetchMyReports() {
+    const { data, error } = await sb
+      .from('reports')
+      .select('*')
+      .eq('employee_id', state.user.id)
+      .order('report_date', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function fetchMyVehicleRequests() {
+    const { data, error } = await sb
+      .from('vehicle_requests')
+      .select('*')
+      .eq('employee_id', state.user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function fetchAllProfiles() {
+    const { data, error } = await sb
+      .from('profiles')
+      .select('*')
+      .order('full_name', { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function fetchUserServiceLogs(userId) {
+    const { data, error } = await sb
+      .from('service_logs')
+      .select('*')
+      .eq('employee_id', userId)
+      .order('service_date', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function fetchUserReports(userId) {
+    const { data, error } = await sb
+      .from('reports')
+      .select('*')
+      .eq('employee_id', userId)
+      .order('report_date', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function createServiceLog(payload) {
+    const { error } = await sb.from('service_logs').insert({
+      employee_id: state.user.id,
+      ...payload
+    });
+    if (error) throw error;
+  }
+
+  async function createReport(payload) {
+    const { error } = await sb.from('reports').insert({
+      employee_id: state.user.id,
+      report_code: `JEL-${Date.now()}`,
+      report_date: new Date().toISOString().slice(0, 10),
+      ...payload
+    });
+    if (error) throw error;
+  }
+
+  async function createVehicleRequest(payload) {
+    const { error } = await sb.from('vehicle_requests').insert({
+      employee_id: state.user.id,
+      ...payload
+    });
+    if (error) throw error;
+  }
+
+  async function fetchVehicleRequests() {
+  const { data, error } = await sb
+    .from('vehicle_requests')
+    .select(`
+      id,
+      employee_id,
+      vehicle_type,
+      reason,
+      status,
+      created_at,
+      requester:profiles!vehicle_requests_employee_id_fkey(full_name)
+    `)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data || [];
+}
+
+  async function updateVehicleRequestStatus(requestId, status) {
+  const { data, error } = await sb
+    .from('vehicle_requests')
+    .update({ status })
+    .eq('id', requestId)
+    .select();
+
+  console.log('updateVehicleRequestStatus:', { requestId, status, data, error });
+
+  if (error) throw error;
+  return data;
+}
+
+  function showLogin() {
+    el('loginView').classList.remove('hidden');
+    el('appView').classList.add('hidden');
+  }
+
+  function showApp() {
+    el('loginView').classList.add('hidden');
+    el('appView').classList.remove('hidden');
+
+    const isAdmin = state.profile.role === 'admin';
+
+    el('sidebarSubtitle').textContent = isAdmin ? 'OMSZ ADMIN' : 'OMSZ';
+    el('sidebarTitle').textContent = isAdmin ? 'Admin felület' : 'Dolgozói portál';
+    el('sidebarUserName').textContent = state.profile.full_name || '-';
+    el('sidebarUserRole').textContent = state.profile.rank || (isAdmin ? 'Rendszergazda' : 'Dolgozó');
+    el('sidebarStatus').textContent = state.profile.status || (isAdmin ? 'Admin' : 'Aktív');
+    el('topbarType').textContent = isAdmin ? 'Rendszergazdai rendszer' : 'Belső rendszer';
+    el('topbarGreeting').textContent = `Üdv, ${state.profile.full_name || 'Felhasználó'}`;
+    el('stationBadge').textContent = isAdmin ? 'Teljes hozzáférés' : (state.profile.station || 'Nincs megadva');
+
+    el('userNav').classList.toggle('hidden', isAdmin);
+    el('adminNav').classList.toggle('hidden', !isAdmin);
+
+    if (isAdmin && !String(state.page).startsWith('admin-')) {
+      state.page = 'admin-users';
+    }
+    if (!isAdmin && String(state.page).startsWith('admin-')) {
+      state.page = 'overview';
+    }
+
+    highlightActiveNav();
+  }
+
+  function bindNavByRole() {
+    qsa('.nav-btn').forEach(btn => {
+      btn.onclick = () => {
+        state.page = btn.dataset.page;
+        highlightActiveNav();
+        renderCurrentPage();
+      };
+    });
+  }
+
+  function highlightActiveNav() {
+    qsa('.nav-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.page === state.page);
+    });
+  }
+
+  function resetActivity() {
+    state.lastActivity = Date.now();
+  }
+
+  function startAutoLogout() {
+    if (state.timer) clearInterval(state.timer);
+
+    state.lastActivity = Date.now();
+
+    if (!activityBound) {
+      ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(ev => {
+        window.addEventListener(ev, resetActivity, { passive: true });
+      });
+      activityBound = true;
+    }
+
+    state.timer = setInterval(async () => {
+      const left = Math.max(0, 30 * 60 * 1000 - (Date.now() - state.lastActivity));
+      const min = Math.floor(left / 60000);
+      const sec = Math.floor((left % 60000) / 1000);
+
+      el('timerBadge').textContent =
+        `Automatikus kijelentkezés: ${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+
+      if (left <= 0) {
+        await logout();
+      }
+    }, 1000);
+  }
+
+  async function logout() {
+    try {
+      if (state.timer) {
+        clearInterval(state.timer);
+        state.timer = null;
+      }
+
+      await sb.auth.signOut();
+
+      state.profile = null;
+      state.user = null;
+      state.selectedAdminUser = null;
+      state.modalReport = null;
+
+      showLogin();
+      setLoginMessage('success', 'Sikeres kijelentkezés.');
+    } catch (err) {
+      console.error('logout hiba:', err);
+      setLoginMessage('error', err.message || 'Sikertelen kijelentkezés.');
+    }
+  }
+
+  function overviewHTML(profile, reportsCount = 0) {
+    return `
+      <div class="section-title">Áttekintés</div>
+      <div class="section-desc">A saját dolgozói adataid és összesítéseid.</div>
+      <div class="cards">
+        <div class="card"><div class="card-title">Heti percek</div><div class="card-value">${profile.weekly_minutes ?? 0} perc</div></div>
+        <div class="card"><div class="card-title">Jelentések</div><div class="card-value">${reportsCount} db</div></div>
+        <div class="card"><div class="card-title">Kiosztott jármű</div><div class="card-value" style="font-size:18px">${profile.assigned_vehicle || 'Nincs kiosztva'}</div></div>
+        <div class="card"><div class="card-title">Állomás</div><div class="card-value" style="font-size:18px">${profile.station || 'Nincs megadva'}</div></div>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px">
+        <div class="card">
+          <div style="font-size:22px;font-weight:800;margin-bottom:14px">Dolgozói adatok</div>
+          <div class="info-grid">
+            <div class="info-box"><div class="card-title">Név</div><div><b>${profile.full_name || '-'}</b></div></div>
+            <div class="info-box"><div class="card-title">Azonosítói kód</div><div><b>${profile.employee_code || '-'}</b></div></div>
+            <div class="info-box"><div class="card-title">Beosztás</div><div><b>${profile.rank || '-'}</b></div></div>
+            <div class="info-box"><div class="card-title">Státusz</div><div><b>${profile.status || '-'}</b></div></div>
+            <div class="info-box"><div class="card-title">Kiosztott jármű</div><div><b>${profile.assigned_vehicle || '-'}</b></div></div>
+            <div class="info-box"><div class="card-title">Állomás</div><div><b>${profile.station || '-'}</b></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:22px;font-weight:800;margin-bottom:14px">Rendszer állapot</div>
+          <div class="success">Bejelentkezés rendben.</div>
+          <div class="success">SQL kommunikáció rendben.</div>
+          <div class="warn">30 perc inaktivitás után automatikus kijelentkezés.</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function serviceFormHTML() {
+    const today = new Date().toISOString().slice(0, 10);
+
+    return `
+      <div class="section-title">Szolgálati idő</div>
+      <div class="section-desc">Új szolgálati idő rögzítése.</div>
+      <div class="card">
+        <div class="row">
+          <div class="field">
+            <label class="label">Dátum</label>
+            <input id="serviceDate" class="input" type="date" value="${today}" />
+          </div>
+          <div class="field">
+            <label class="label">Kezdés</label>
+            <input id="serviceStart" class="input" type="time" value="08:00" />
+          </div>
+          <div class="field">
+            <label class="label">Befejezés</label>
+            <input id="serviceEnd" class="input" type="time" value="16:00" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Megjegyzés</label>
+          <textarea id="serviceNote" class="textarea" placeholder="Rövid megjegyzés..."></textarea>
+        </div>
+
+        <button id="saveServiceBtn" class="btn btn-primary">Szolgálati idő leadása</button>
+        <div id="serviceMsg"></div>
+      </div>
+    `;
+  }
+
+  function reportsFormHTML(reports) {
+    return `
+      <div class="section-title">Jelentések</div>
+      <div class="section-desc">Új jelentés rögzítése és korábbi jelentések listája.</div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="field">
+            <label class="label">Cím</label>
+            <input id="reportTitle" class="input" placeholder="Pl. Közúti baleset" />
+          </div>
+
+          <div class="field">
+            <label class="label">Prioritás</label>
+            <select id="reportPriority" class="select">
+              <option>Alacsony</option>
+              <option selected>Normál</option>
+              <option>Magas</option>
+              <option>Kritikus</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label">Jelentés szövege</label>
+            <textarea id="reportContent" class="textarea" placeholder="Írd le, mi történt..."></textarea>
+          </div>
+
+          <button id="saveReportBtn" class="btn btn-primary">Jelentés leadása</button>
+          <div id="reportMsg"></div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:22px;font-weight:800;margin-bottom:14px">Korábbi jelentések</div>
+          ${reports.length ? reports.map(r => `
+            <div class="list-item open-report" data-report='${JSON.stringify(r).replace(/'/g, "&apos;")}'>
+              <div style="display:flex;justify-content:space-between;gap:12px">
+                <div>
+                  <div style="font-weight:800">${escapeHtml(r.title || '-')}</div>
+                  <div class="small muted" style="margin-top:4px">${escapeHtml(r.report_date || '-')} • ${escapeHtml(r.report_code || '-')}</div>
+                </div>
+                <div class="badge">${escapeHtml(r.priority || 'Normál')}</div>
+              </div>
+            </div>
+          `).join('') : '<div class="muted">Még nincs jelentés.</div>'}
+        </div>
+      </div>
+    `;
+  }
+
+  function vehicleHTML(requests) {
+  return `
+    <div class="section-title">Jármű igénylés</div>
+    <div class="section-desc">Új járműigénylés leadása.</div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="field">
+          <label class="label">Jármű típusa</label>
+          <select id="vehicleType" class="select">
+            <option>Rohamkocsi</option>
+            <option>Mentőautó</option>
+            <option>Esetkocsi</option>
+            <option>Betegszállító</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="label">Indoklás</label>
+          <textarea id="vehicleReason" class="textarea" placeholder="Miért van szükség új járműre?"></textarea>
+        </div>
+
+        <button id="saveVehicleBtn" class="btn btn-primary">Igénylés leadása</button>
+        <div id="vehicleMsg"></div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:22px;font-weight:800;margin-bottom:14px">Korábbi igénylések</div>
+
+        ${requests.length ? requests.map(r => `
+          <div class="list-item">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+              <div>
+                <div style="font-weight:800">${escapeHtml(r.vehicle_type || '-')}</div>
+                <div class="small muted" style="margin-top:4px">${new Date(r.created_at).toLocaleString('hu-HU')}</div>
+              </div>
+
+              <div class="request-badge status-${String(r.status || 'pending').toLowerCase()}">
+                ${formatRequestStatus(r.status)}
+              </div>
+            </div>
+
+            <div class="small" style="margin-top:8px">${escapeHtml(r.reason || '')}</div>
+          </div>
+        `).join('') : '<div class="muted">Még nincs járműigénylés.</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function formatRequestStatus(status) {
+  const value = String(status || 'pending').toLowerCase();
+
+  if (value === 'approved') return 'Elfogadva';
+  if (value === 'rejected') return 'Elutasítva';
+  return 'Döntésre vár';
+}
+
+  function getWeekBounds(d) {
+    const date = new Date(d);
+    const day = date.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+
+    const monday = new Date(date);
+    monday.setDate(date.getDate() + diff);
+    monday.setHours(0, 0, 0, 0);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    return { monday, sunday };
+  }
+
+  function countWeeklyReports(reports) {
+    const { monday, sunday } = getWeekBounds(new Date());
+
+    return reports.filter(r => {
+      const d = new Date(r.report_date);
+      return d >= monday && d <= sunday;
+    }).length;
+  }
+
+  function adminUsersHTML(users, selected, logs, reports) {
+    return `
+      <div class="section-title">Felhasználók</div>
+      <div class="section-desc">Admin nézet: dolgozók listája és részletes adatai.</div>
+
+      <div class="grid-2" style="grid-template-columns:.9fr 1.1fr">
+        <div class="card">
+          <div style="font-size:22px;font-weight:800;margin-bottom:14px">Felhasználói lista</div>
+          ${users.map(u => `
+            <div class="list-item admin-user-item ${selected && selected.id === u.id ? 'active' : ''}" data-userid="${u.id}">
+              <div style="font-weight:800">${escapeHtml(u.full_name || '-')}</div>
+              <div class="small muted" style="margin-top:4px">${escapeHtml(u.employee_code || '-')} • ${escapeHtml(u.rank || '-')}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div>
+          ${selected ? `
+            <div class="card" style="margin-bottom:16px">
+              <div style="font-size:22px;font-weight:800;margin-bottom:14px">${escapeHtml(selected.full_name)}</div>
+              <div class="cards" style="grid-template-columns:repeat(4,1fr)">
+                <div class="card" style="padding:14px"><div class="card-title">Szolgálati gépjármű</div><div style="font-weight:800">${escapeHtml(selected.assigned_vehicle || '-')}</div></div>
+                <div class="card" style="padding:14px"><div class="card-title">Heti percek</div><div style="font-weight:800">${selected.weekly_minutes ?? 0} perc</div></div>
+                <div class="card" style="padding:14px"><div class="card-title">Jelentések száma</div><div style="font-weight:800">${reports.length} db</div></div>
+                <div class="card" style="padding:14px"><div class="card-title">Heti jelentések</div><div style="font-weight:800">${countWeeklyReports(reports)} db</div></div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-bottom:16px">
+              <div style="font-size:22px;font-weight:800;margin-bottom:14px">Szolgálati idők</div>
+              ${logs.length ? logs.map(log => `
+                <div class="list-item" style="cursor:default">
+                  <div style="display:flex;justify-content:space-between;gap:12px">
+                    <div>
+                      <div style="font-weight:800">${escapeHtml(log.service_date || '-')}</div>
+                      <div class="small muted" style="margin-top:4px">${escapeHtml(log.start_time || '-')} - ${escapeHtml(log.end_time || '-')}</div>
+                    </div>
+                    <div class="badge">${log.minutes || 0} perc</div>
+                  </div>
+                  <div class="small" style="margin-top:8px">${escapeHtml(log.note || '')}</div>
+                </div>
+              `).join('') : '<div class="muted">Nincs szolgálati idő bejegyzés.</div>'}
+            </div>
+
+            <div class="card">
+              <div style="font-size:22px;font-weight:800;margin-bottom:14px">Jelentések</div>
+              ${reports.length ? reports.map(r => `
+                <div class="list-item open-report" data-report='${JSON.stringify(r).replace(/'/g, "&apos;")}'>
+                  <div style="display:flex;justify-content:space-between;gap:12px">
+                    <div>
+                      <div style="font-weight:800">${escapeHtml(r.title || '-')}</div>
+                      <div class="small muted" style="margin-top:4px">${escapeHtml(r.report_date || '-')} • ${escapeHtml(r.report_code || '-')}</div>
+                    </div>
+                    <div class="badge">${escapeHtml(r.priority || 'Normál')}</div>
+                  </div>
+                </div>
+              `).join('') : '<div class="muted">Nincs jelentés.</div>'}
+            </div>
+          ` : `<div class="card"><div class="muted">Válassz ki egy felhasználót.</div></div>`}
+        </div>
+      </div>
+    `;
+  }
+
+  async function renderCurrentPage() {
+    try {
+      if (state.profile.role === 'admin') {
+        if (state.page === 'admin-users') {
+          await renderAdminPage();
+          return;
+        }
+
+        if (state.page === 'admin-vehicles') {
+          el('pageRoot').innerHTML = `
+            <div class="section-title">Jármű igénylések</div>
+            <div class="section-desc">Beérkezett kérelmek kezelése.</div>
+            <div id="adminVehicleRequests"></div>
+          `;
+          await renderAdminVehicleRequests();
+          return;
+        }
+      }
+
+      if (state.page === 'overview') {
+        const reports = await fetchMyReports();
+        el('pageRoot').innerHTML = overviewHTML(state.profile, reports.length);
+        return;
+      }
+
+      if (state.page === 'service') {
+        el('pageRoot').innerHTML = serviceFormHTML();
+
+        el('saveServiceBtn').onclick = async () => {
+          try {
+            const date = el('serviceDate').value;
+            const start = el('serviceStart').value;
+            const end = el('serviceEnd').value;
+            const note = el('serviceNote').value.trim();
+            const minutes = calcMinutes(start, end);
+
+            if (minutes <= 0) {
+              return el('serviceMsg').innerHTML = '<div class="error">A befejezési idő legyen későbbi a kezdésnél.</div>';
+            }
+
+            await createServiceLog({
+              service_date: date,
+              start_time: start,
+              end_time: end,
+              minutes,
+              note
+            });
+
+            state.profile = await fetchMyProfile();
+            el('serviceMsg').innerHTML = '<div class="success">A szolgálati idő mentve lett.</div>';
+          } catch (err) {
+            el('serviceMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Mentési hiba.')}</div>`;
+          }
+        };
+
+        return;
+      }
+
+      if (state.page === 'reports') {
+        const reports = await fetchMyReports();
+        el('pageRoot').innerHTML = reportsFormHTML(reports);
+
+        el('saveReportBtn').onclick = async () => {
+          try {
+            const title = el('reportTitle').value.trim();
+            const priority = el('reportPriority').value;
+            const content = el('reportContent').value.trim();
+
+            if (!title || !content) {
+              return el('reportMsg').innerHTML = '<div class="error">Add meg a címet és a jelentés szövegét.</div>';
+            }
+
+            await createReport({ title, priority, content });
+            el('reportMsg').innerHTML = '<div class="success">A jelentés mentve lett.</div>';
+            renderCurrentPage();
+          } catch (err) {
+            el('reportMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Mentési hiba.')}</div>`;
+          }
+        };
+
+        bindReportOpeners();
+        return;
+      }
+
+      if (state.page === 'vehicle') {
+  const requests = await fetchMyVehicleRequests();
+  el('pageRoot').innerHTML = vehicleHTML(requests);
+
+  el('saveVehicleBtn').onclick = async () => {
+    try {
+      const vehicle_type = el('vehicleType').value;
+      const reason = el('vehicleReason').value.trim();
+
+      if (!reason) {
+        return el('vehicleMsg').innerHTML = '<div class="error">Add meg az indoklást.</div>';
+      }
+
+      await createVehicleRequest({ vehicle_type, reason });
+      el('vehicleMsg').innerHTML = '<div class="success">Az igénylés mentve lett.</div>';
+      renderCurrentPage();
+    } catch (err) {
+      el('vehicleMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Mentési hiba.')}</div>`;
+    }
+  };
+
+  return;
+}
+
+    } catch (err) {
+      console.error(err);
+      el('pageRoot').innerHTML = `<div class="error">${escapeHtml(err.message || 'Hiba történt az oldal betöltésekor.')}</div>`;
+    }
+  }
+
+  async function renderAdminPage() {
+    try {
+      const users = await fetchAllProfiles();
+
+      if (!state.selectedAdminUser && users.length) {
+        state.selectedAdminUser = users[0];
+      }
+
+      let logs = [];
+      let reports = [];
+
+      if (state.selectedAdminUser) {
+        logs = await fetchUserServiceLogs(state.selectedAdminUser.id);
+        reports = await fetchUserReports(state.selectedAdminUser.id);
+      }
+
+      el('pageRoot').innerHTML = adminUsersHTML(users, state.selectedAdminUser, logs, reports);
+
+      qsa('.admin-user-item').forEach(item => {
+        item.onclick = () => {
+          state.selectedAdminUser = users.find(u => u.id === item.dataset.userid);
+          renderCurrentPage();
+        };
+      });
+
+      bindReportOpeners();
+    } catch (err) {
+      el('pageRoot').innerHTML = `
+        <div class="warn">
+          Az admin lista most valószínűleg azért nem töltődik be, mert még hiányzik az admin RLS javítás.
+          <div style="margin-top:8px">${escapeHtml(err.message || '')}</div>
+        </div>
+      `;
+    }
+  }
+
+  async function renderAdminVehicleRequests() {
+    try {
+      const requests = await fetchVehicleRequests();
+      const container = el('adminVehicleRequests');
+
+      if (!requests.length) {
+        container.innerHTML = `
+          <div class="card">
+            <div class="muted">Jelenleg nincs jármű igénylés.</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = requests.map(req => `
+        <div class="request-card">
+          <div class="request-top">
+            <div>
+              <div class="request-name">${escapeHtml(req.requester?.full_name || 'Ismeretlen felhasználó')}</div>
+              <div class="request-date">${new Date(req.created_at).toLocaleString('hu-HU')}</div>
+            </div>
+            <div class="request-badge status-${(req.status || 'pending').toLowerCase()}">
+              ${formatRequestStatus(req.status)}
+            </div>
+          </div>
+
+          <div class="request-body">
+            <div class="request-row">
+              <span class="request-label">Jármű:</span>
+              <span class="request-value">${escapeHtml(req.vehicle_type || '-')}</span>
+            </div>
+            <div class="request-row">
+              <span class="request-label">Indok:</span>
+              <span class="request-value">${escapeHtml(req.reason || '-')}</span>
+            </div>
+          </div>
+
+          ${String(req.status || 'pending').toLowerCase() === 'pending' ? `
+  <div class="request-actions">
+    <button class="btn btn-primary approve-request-btn" data-id="${req.id}">
+      Elfogadás
+    </button>
+    <button class="btn btn-danger reject-request-btn" data-id="${req.id}">
+      Elutasítás
+    </button>
+  </div>
+` : ''}
+        </div>
+      `).join('');
+
+      qsa('.approve-request-btn').forEach(btn => {
+  btn.onclick = async () => {
+    try {
+      await updateVehicleRequestStatus(btn.dataset.id, 'approved');
+      await renderAdminVehicleRequests();
+    } catch (err) {
+      console.error('approve hiba:', err);
+      alert(err.message || 'Nem sikerült elfogadni az igénylést.');
+    }
+  };
+});
+
+qsa('.reject-request-btn').forEach(btn => {
+  btn.onclick = async () => {
+    try {
+      await updateVehicleRequestStatus(btn.dataset.id, 'rejected');
+      await renderAdminVehicleRequests();
+    } catch (err) {
+      console.error('reject hiba:', err);
+      alert(err.message || 'Nem sikerült elutasítani az igénylést.');
+    }
+  };
+});
+
+    } catch (err) {
+      console.error(err);
+      el('adminVehicleRequests').innerHTML = `
+        <div class="error">${escapeHtml(err.message || 'Nem sikerült betölteni a jármű igényléseket.')}</div>
+      `;
+    }
+  }
+
+function formatRequestStatus(status) {
+  const value = String(status || 'pending').toLowerCase();
+
+  if (value === 'approved') return 'Elfogadva';
+  if (value === 'rejected') return 'Elutasítva';
+  return 'Döntésre vár';
+}
+
+  function bindReportOpeners() {
+    qsa('.open-report').forEach(btn => {
+      btn.onclick = () => {
+        const report = JSON.parse(btn.dataset.report);
+        openReport(report);
+      };
+    });
+  }
+
+  function openReport(report) {
+    el('modalTitle').textContent = report.title || '-';
+    el('modalMeta').textContent = `${report.report_date || '-'} • ${report.report_code || '-'} • ${report.priority || 'Normál'}`;
+    el('modalContent').textContent = report.content || '';
+    el('reportModal').classList.remove('hidden');
+  }
+
+  function calcMinutes(start, end) {
+    const [sh, sm] = start.split(':').map(Number);
+    const [eh, em] = end.split(':').map(Number);
+    return (eh * 60 + em) - (sh * 60 + sm);
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  async function adminCreateUser({
+    fullName,
+    password,
+    employeeCode = '',
+    rank = 'Mentődolgozó',
+    station = 'Nincs megadva'
+  }) {
+    const { data, error } = await sb.functions.invoke('create-user', {
+      body: {
+        fullName,
+        password,
+        employeeCode,
+        rank,
+        station
+      }
+    });
+
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+
+    return data;
+  }
+
+  el('modeUserBtn').onclick = () => setMode('user');
+  el('modeAdminBtn').onclick = () => setMode('admin');
+  el('userLoginBtn').onclick = signInUser;
+  el('adminLoginBtn').onclick = loginAdmin;
+  el('logoutBtn').onclick = logout;
+  el('closeModalBtn').onclick = () => el('reportModal').classList.add('hidden');
+
+  window.addEventListener('click', (e) => {
+    if (e.target === el('reportModal')) {
+      el('reportModal').classList.add('hidden');
+    }
+  });
+
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    if (session?.user) {
+      try {
+        await bootstrapApp();
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      showLogin();
+    }
+  });
+
+  setMode('user');
+  bootstrapApp().catch(() => showLogin());
+</script>
+</body>
+</html>
