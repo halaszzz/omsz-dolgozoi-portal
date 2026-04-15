@@ -794,38 +794,63 @@
     `;
   }
 
-  function serviceFormHTML() {
-    const today = new Date().toISOString().slice(0, 10);
+function serviceFormHTML() {
+  const today = new Date().toISOString().slice(0, 10);
 
-    return `
-      <div class="section-title">Szolgálati idő</div>
-      <div class="section-desc">Új szolgálati idő rögzítése.</div>
-      <div class="card">
-        <div class="row">
-          <div class="field">
-            <label class="label">Dátum</label>
-            <input id="serviceDate" class="input" type="date" value="${today}" />
-          </div>
-          <div class="field">
-            <label class="label">Kezdés</label>
-            <input id="serviceStart" class="input" type="time" value="08:00" />
-          </div>
-          <div class="field">
-            <label class="label">Befejezés</label>
-            <input id="serviceEnd" class="input" type="time" value="16:00" />
-          </div>
+  return `
+    <div class="section-title">Szolgálati idő</div>
+    <div class="section-desc">Új szolgálati idő rögzítése.</div>
+    <div class="card">
+      <div class="row">
+        <div class="field">
+          <label class="label">Dátum</label>
+          <input id="serviceDate" class="input" type="date" value="${today}" />
         </div>
 
         <div class="field">
-          <label class="label">Megjegyzés</label>
-          <textarea id="serviceNote" class="textarea" placeholder="Rövid megjegyzés..."></textarea>
+          <label class="label">műszak elkezdése</label>
+          <input
+            id="serviceStart"
+            class="input"
+            type="text"
+            inputmode="numeric"
+            placeholder="pl. 16:43"
+            value="08:00"
+            maxlength="5"
+          />
         </div>
 
-        <button id="saveServiceBtn" class="btn btn-primary">Szolgálati idő leadása</button>
-        <div id="serviceMsg"></div>
+        <div class="field">
+          <label class="label">Műszak befejezése</label>
+          <input
+            id="serviceEnd"
+            class="input"
+            type="text"
+            inputmode="numeric"
+            placeholder="pl. 20:23"
+            value="16:00"
+            maxlength="5"
+          />
+        </div>
       </div>
-    `;
-  }
+
+      <div class="field">
+        <label class="label">Megjegyzés</label>
+        <textarea id="serviceNote" class="textarea" placeholder="Rövid megjegyzés..."></textarea>
+      </div>
+
+      <button id="saveServiceBtn" class="btn btn-primary">Szolgálati idő leadása</button>
+      <div id="serviceMsg"></div>
+    </div>
+  `;
+}
+
+function isValidTimeString(value) {
+  if (!/^\d{2}:\d{2}$/.test(value)) return false;
+
+  const [h, m] = value.split(':').map(Number);
+  return h >= 0 && h <= 23 && m >= 0 && m <= 59;
+}
 
   function reportsFormHTML(reports) {
     return `
@@ -1051,16 +1076,20 @@ function formatRequestStatus(status) {
       if (state.page === 'service') {
         el('pageRoot').innerHTML = serviceFormHTML();
 
-        el('saveServiceBtn').onclick = async () => {
+          autoFormatTimeInput(el('serviceStart'));
+          autoFormatTimeInput(el('serviceEnd'));
+
+         el('saveServiceBtn').onclick = async () => {
           try {
             const date = el('serviceDate').value;
-            const start = el('serviceStart').value;
-            const end = el('serviceEnd').value;
+            const start = el('serviceStart').value.trim();
+            const end = el('serviceEnd').value.trim();
             const note = el('serviceNote').value.trim();
             const minutes = calcMinutes(start, end);
 
-            if (minutes <= 0) {
-              return el('serviceMsg').innerHTML = '<div class="error">A befejezési idő legyen későbbi a kezdésnél.</div>';
+            if (!isValidTimeString(start) || !isValidTimeString(end)) {
+              return el('serviceMsg').innerHTML =
+              '<div class="error">Az időformátum legyen 24 órás, pl. 16:43 vagy 20:23.</div>';
             }
 
             await createServiceLog({
@@ -1136,7 +1165,7 @@ function formatRequestStatus(status) {
       el('pageRoot').innerHTML = `<div class="error">${escapeHtml(err.message || 'Hiba történt az oldal betöltésekor.')}</div>`;
     }
   }
-
+  
   async function renderAdminPage() {
     try {
       const users = await fetchAllProfiles();
@@ -1284,6 +1313,19 @@ function formatRequestStatus(status) {
     const [eh, em] = end.split(':').map(Number);
     return (eh * 60 + em) - (sh * 60 + sm);
   }
+
+  function autoFormatTimeInput(input) {
+  input.addEventListener('input', () => {
+    let value = input.value.replace(/\D/g, ''); // csak számok
+
+    if (value.length >= 3) {
+      value = value.slice(0, 4);
+      input.value = value.slice(0, 2) + ':' + value.slice(2);
+    } else {
+      input.value = value;
+    }
+  });
+}
 
   function escapeHtml(value) {
     return String(value ?? '')
