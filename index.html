@@ -300,18 +300,19 @@
       <div style="font-size:12px;letter-spacing:.18em;color:#94a3b8;text-transform:uppercase">Országos Mentőszolgálat</div>
       <h1 style="font-size:48px;line-height:1.05;margin-top:14px">Dolgozói portál</h1>
       <p style="color:#cbd5e1;margin-top:18px;max-width:560px;font-size:18px">
-        Könnyű szolgálati áttekintés minden életmentőnek. A WSS Roleplay szerveréhez készült, nem az omsz hivatalos weboldala.
+        A WSS Roleplay szerveréhez készült, semmilyen formában sem kapcsolódik a hivatalos OMSZ portálokhoz.
       </p>
       <div class="feature">Átlátható felület.</div>
       <div class="feature">Könnyű kezelés.</div>
       <div class="feature">Gyors Feldolgozás.</div>
       <div class="feature">Életmentők online fő adatkezelési felülete.</div>
+      <div class="feature">Amennyiben nincs hozzáférésed az oldalhoz, de az omsz köreiben dolgozol keresd fel a rendszergazdát!((halasz))</div>
     </div>
 
     <div class="login-right">
       <div class="login-card">
         <h2 style="font-size:30px">Bejelentkezés</h2>
-        <p class="muted" style="margin-top:8px">Dolgozói vagy vezetőségi portál.</p>
+        <p class="muted" style="margin-top:8px">Dolgozói és vezetőségi portál.</p>
 
         <div class="mode-switch">
           <button id="modeUserBtn" class="btn btn-dark">Mentő Dolgozó</button>
@@ -321,7 +322,7 @@
         <div id="userLoginFields">
           <div class="field">
             <label class="label">Felhasználónév</label>
-            <input id="employeeCode" class="input" placeholder="Pl. OMSZ8421" />
+            <input id="employeeCode" class="input" placeholder="Mentő dolgozó felhasználónév" />
           </div>
           <div class="field">
             <label class="label">Jelszó</label>
@@ -333,7 +334,7 @@
         <div id="adminLoginFields" class="hidden">
           <div class="field">
             <label class="label">Vezetőség email</label>
-            <input id="adminEmail" class="input" value="Email cím" />
+            <input id="employeeCode" class="input" placeholder="Vezetőségi felhasználónév" />
           </div>
           <div class="field">
             <label class="label">Jelszó</label>
@@ -560,15 +561,17 @@
   }
 
   async function fetchMyVehicleRequests() {
-    const { data, error } = await sb
-      .from('vehicle_requests')
-      .select('*')
-      .eq('employee_id', state.user.id)
-      .order('created_at', { ascending: false });
+  const { data, error } = await sb
+    .from('vehicle_requests')
+    .select('*')
+    .eq('employee_id', state.user.id)
+    .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
-  }
+  console.log('my vehicle requests:', data);
+
+  if (error) throw error;
+  return data || [];
+}
 
   async function fetchAllProfiles() {
     const { data, error } = await sb
@@ -636,24 +639,29 @@
       employee_id,
       vehicle_type,
       reason,
-      status,
       created_at,
+      admin_decision,
+      admin_reason,
       requester:profiles!vehicle_requests_employee_id_fkey(full_name)
     `)
+    .is('admin_decision', null)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
   return data || [];
 }
 
-  async function updateVehicleRequestStatus(requestId, status) {
+  async function updateVehicleRequestAdminResponse(requestId, adminDecision, adminReason) {
   const { data, error } = await sb
     .from('vehicle_requests')
-    .update({ status })
+    .update({
+      admin_decision: adminDecision,
+      admin_reason: adminReason
+    })
     .eq('id', requestId)
     .select();
 
-  console.log('updateVehicleRequestStatus:', { requestId, status, data, error });
+  console.log('updateVehicleRequestAdminResponse:', { requestId, adminDecision, adminReason, data, error });
 
   if (error) throw error;
   return data;
@@ -675,7 +683,7 @@
     el('sidebarUserName').textContent = state.profile.full_name || '-';
     el('sidebarUserRole').textContent = state.profile.rank || (isAdmin ? 'Rendszergazda' : 'Dolgozó');
     el('sidebarStatus').textContent = state.profile.status || (isAdmin ? 'Admin' : 'Aktív');
-    el('topbarType').textContent = isAdmin ? 'Rendszergazdai rendszer' : 'Belső rendszer';
+    el('topbarType').textContent = isAdmin ? 'Rendszergazda rendszer' : 'Belső rendszer';
     el('topbarGreeting').textContent = `Üdv, ${state.profile.full_name || 'Felhasználó'}`;
     el('stationBadge').textContent = isAdmin ? 'Teljes hozzáférés' : (state.profile.station || 'Nincs megadva');
 
@@ -776,10 +784,10 @@
           <div style="font-size:22px;font-weight:800;margin-bottom:14px">Dolgozói adatok</div>
           <div class="info-grid">
             <div class="info-box"><div class="card-title">Név</div><div><b>${profile.full_name || '-'}</b></div></div>
-            <div class="info-box"><div class="card-title">Azonosítói kód</div><div><b>${profile.employee_code || '-'}</b></div></div>
+            <div class="info-box"><div class="card-title">Dolgozókód</div><div><b>${profile.employee_code || '-'}</b></div></div>
             <div class="info-box"><div class="card-title">Beosztás</div><div><b>${profile.rank || '-'}</b></div></div>
             <div class="info-box"><div class="card-title">Státusz</div><div><b>${profile.status || '-'}</b></div></div>
-            <div class="info-box"><div class="card-title">Kiosztott jármű</div><div><b>${profile.assigned_vehicle || '-'}</b></div></div>
+            <div class="info-box"><div class="card-title">Kiosztott jármű(vek)</div><div><b>${profile.assigned_vehicle || '-'}</b></div></div>
             <div class="info-box"><div class="card-title">Állomás</div><div><b>${profile.station || '-'}</b></div></div>
           </div>
         </div>
@@ -911,19 +919,26 @@ function isValidTimeString(value) {
         <div class="field">
           <label class="label">Jármű típusa</label>
           <select id="vehicleType" class="select">
-            <option>Rohamkocsi</option>
-            <option>Mentőautó</option>
-            <option>Esetkocsi</option>
-            <option>Betegszállító</option>
+            <option>Volkswagen Crafter Profile</option>
+            <option>Mercedes-Benz Sprinter II Facelift profile</option>
+            <option>Suzuki Grand Vitara</option>
+            <option>Suzuki S-Cross</option>
+            <option>Opel Astra JX</option>
+            <option>Opel Astra J légi mentők-légirendészet</option>
+            <option>Skoda Octavia III Facelift</option>
           </select>
         </div>
 
         <div class="field">
           <label class="label">Indoklás</label>
-          <textarea id="vehicleReason" class="textarea" placeholder="Miért van szükség új járműre?"></textarea>
+          <textarea
+            id="vehicleReason"
+            class="textarea"
+            placeholder="Miért van szükség a járműre?"
+          ></textarea>
         </div>
 
-        <button id="saveVehicleBtn" class="btn btn-primary">Igénylés leadása</button>
+        <button id="saveVehicleBtn" class="btn btn-primary">Igénylés beküldése</button>
         <div id="vehicleMsg"></div>
       </div>
 
@@ -938,17 +953,35 @@ function isValidTimeString(value) {
                 <div class="small muted" style="margin-top:4px">${new Date(r.created_at).toLocaleString('hu-HU')}</div>
               </div>
 
-              <div class="request-badge status-${String(r.status || 'pending').toLowerCase()}">
-                ${formatRequestStatus(r.status)}
-              </div>
+              <div class="request-badge ${r.admin_decision && r.admin_decision.trim() ? 'status-approved' : 'status-pending'}">
+  ${escapeHtml(formatVehicleDecision(r.admin_decision))}
+</div>
             </div>
 
             <div class="small" style="margin-top:8px">${escapeHtml(r.reason || '')}</div>
+
+            ${r.admin_reason && r.admin_reason.trim() ? `
+              <div class="small" style="margin-top:8px">
+                <b>Indok:</b> ${escapeHtml(r.admin_reason)}
+              </div>
+            ` : ''}
           </div>
         `).join('') : '<div class="muted">Még nincs járműigénylés.</div>'}
       </div>
     </div>
   `;
+}
+
+function formatVehicleDecision(decision) {
+  return decision && decision.trim() ? decision : 'Döntésre vár';
+}
+
+function formatRequestStatus(status) {
+  const value = String(status || 'pending').toLowerCase();
+
+  if (value === 'approved') return 'Elfogadva';
+  if (value === 'rejected') return 'Elutasítva';
+  return 'Döntésre vár';
 }
 
 function formatRequestStatus(status) {
@@ -987,7 +1020,7 @@ function formatRequestStatus(status) {
   function adminUsersHTML(users, selected, logs, reports) {
     return `
       <div class="section-title">Felhasználók</div>
-      <div class="section-desc">Admin nézet: dolgozók listája és részletes adatai.</div>
+      <div class="section-desc">Vezetőségi portál. Mentő dolgozók fontos információi, igényléseik áttekintésére szolgál.</div>
 
       <div class="grid-2" style="grid-template-columns:.9fr 1.1fr">
         <div class="card">
@@ -1005,7 +1038,7 @@ function formatRequestStatus(status) {
             <div class="card" style="margin-bottom:16px">
               <div style="font-size:22px;font-weight:800;margin-bottom:14px">${escapeHtml(selected.full_name)}</div>
               <div class="cards" style="grid-template-columns:repeat(4,1fr)">
-                <div class="card" style="padding:14px"><div class="card-title">Szolgálati gépjármű</div><div style="font-weight:800">${escapeHtml(selected.assigned_vehicle || '-')}</div></div>
+                <div class="card" style="padding:14px"><div class="card-title">Kiosztott mentőgépkocsi</div><div style="font-weight:800">${escapeHtml(selected.assigned_vehicle || '-')}</div></div>
                 <div class="card" style="padding:14px"><div class="card-title">Heti percek</div><div style="font-weight:800">${selected.weekly_minutes ?? 0} perc</div></div>
                 <div class="card" style="padding:14px"><div class="card-title">Jelentések száma</div><div style="font-weight:800">${reports.length} db</div></div>
                 <div class="card" style="padding:14px"><div class="card-title">Heti jelentések</div><div style="font-weight:800">${countWeeklyReports(reports)} db</div></div>
@@ -1202,87 +1235,104 @@ function formatRequestStatus(status) {
     }
   }
 
-  async function renderAdminVehicleRequests() {
-    try {
-      const requests = await fetchVehicleRequests();
-      const container = el('adminVehicleRequests');
+async function renderAdminVehicleRequests() {
+  try {
+    const requests = await fetchVehicleRequests();
+    const container = el('adminVehicleRequests');
 
-      if (!requests.length) {
-        container.innerHTML = `
-          <div class="card">
-            <div class="muted">Jelenleg nincs jármű igénylés.</div>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = requests.map(req => `
-        <div class="request-card">
-          <div class="request-top">
-            <div>
-              <div class="request-name">${escapeHtml(req.requester?.full_name || 'Ismeretlen felhasználó')}</div>
-              <div class="request-date">${new Date(req.created_at).toLocaleString('hu-HU')}</div>
-            </div>
-            <div class="request-badge status-${(req.status || 'pending').toLowerCase()}">
-              ${formatRequestStatus(req.status)}
-            </div>
-          </div>
-
-          <div class="request-body">
-            <div class="request-row">
-              <span class="request-label">Jármű:</span>
-              <span class="request-value">${escapeHtml(req.vehicle_type || '-')}</span>
-            </div>
-            <div class="request-row">
-              <span class="request-label">Indok:</span>
-              <span class="request-value">${escapeHtml(req.reason || '-')}</span>
-            </div>
-          </div>
-
-          ${String(req.status || 'pending').toLowerCase() === 'pending' ? `
-  <div class="request-actions">
-    <button class="btn btn-primary approve-request-btn" data-id="${req.id}">
-      Elfogadás
-    </button>
-    <button class="btn btn-danger reject-request-btn" data-id="${req.id}">
-      Elutasítás
-    </button>
-  </div>
-` : ''}
+    if (!requests.length) {
+      container.innerHTML = `
+        <div class="card">
+          <div class="muted">Jelenleg nincs függő jármű igénylés.</div>
         </div>
-      `).join('');
-
-      qsa('.approve-request-btn').forEach(btn => {
-  btn.onclick = async () => {
-    try {
-      await updateVehicleRequestStatus(btn.dataset.id, 'approved');
-      await renderAdminVehicleRequests();
-    } catch (err) {
-      console.error('approve hiba:', err);
-      alert(err.message || 'Nem sikerült elfogadni az igénylést.');
-    }
-  };
-});
-
-qsa('.reject-request-btn').forEach(btn => {
-  btn.onclick = async () => {
-    try {
-      await updateVehicleRequestStatus(btn.dataset.id, 'rejected');
-      await renderAdminVehicleRequests();
-    } catch (err) {
-      console.error('reject hiba:', err);
-      alert(err.message || 'Nem sikerült elutasítani az igénylést.');
-    }
-  };
-});
-
-    } catch (err) {
-      console.error(err);
-      el('adminVehicleRequests').innerHTML = `
-        <div class="error">${escapeHtml(err.message || 'Nem sikerült betölteni a jármű igényléseket.')}</div>
       `;
+      return;
     }
+
+    container.innerHTML = requests.map(req => `
+      <div class="request-card">
+        <div class="request-top">
+          <div>
+            <div class="request-name">${escapeHtml(req.requester?.full_name || 'Ismeretlen felhasználó')}</div>
+            <div class="request-date">${new Date(req.created_at).toLocaleString('hu-HU')}</div>
+          </div>
+
+          <div class="request-badge status-pending">
+            ${escapeHtml(formatVehicleDecision(req.admin_decision))}
+          </div>
+        </div>
+
+        <div class="request-body">
+          <div class="request-row">
+            <span class="request-label">Megigényelt jármű:</span>
+            <span class="request-value">${escapeHtml(req.vehicle_type || '-')}</span>
+          </div>
+
+          <div class="request-row">
+            <span class="request-label">Mentő dolgozó indoka:</span>
+            <span class="request-value">${escapeHtml(req.reason || '-')}</span>
+          </div>
+
+          ${req.admin_reason && req.admin_reason.trim() ? `
+            <div class="request-row">
+              <span class="request-label">Jelenlegi admin indok:</span>
+              <span class="request-value">${escapeHtml(req.admin_reason)}</span>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="request-actions" style="display:flex;flex-direction:column;gap:10px">
+          <input
+            class="input admin-decision-input"
+            data-id="${req.id}"
+            placeholder="Elfogadva/Elutasítva"
+            value="${escapeHtml(req.admin_decision || '')}"
+          />
+
+          <textarea
+            class="textarea admin-reason-input"
+            data-id="${req.id}"
+            placeholder="Döntés indoklása"
+          >${escapeHtml(req.admin_reason || '')}</textarea>
+
+          <button class="btn btn-primary save-admin-response-btn" data-id="${req.id}">
+            Döntés megerősítése
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+        qsa('.save-admin-response-btn').forEach(btn => {
+      btn.onclick = async () => {
+        try {
+          const id = btn.dataset.id;
+          const decisionInput = document.querySelector(`.admin-decision-input[data-id="${id}"]`);
+          const reasonInput = document.querySelector(`.admin-reason-input[data-id="${id}"]`);
+
+          const adminDecision = decisionInput ? decisionInput.value.trim() : '';
+          const adminReason = reasonInput ? reasonInput.value.trim() : '';
+
+          if (!adminDecision) {
+            alert('Adj meg döntést a mentés előtt.');
+            return;
+          }
+
+          await updateVehicleRequestAdminResponse(id, adminDecision, adminReason);
+          await renderAdminVehicleRequests();
+        } catch (err) {
+          console.error('admin vehicle decision mentési hiba:', err);
+          alert(err.message || 'Nem sikerült menteni az admin döntést.');
+        }
+      };
+    });
+
+  } catch (err) {
+    console.error(err);
+    el('adminVehicleRequests').innerHTML = `
+      <div class="error">${escapeHtml(err.message || 'Nem sikerült betölteni a jármű igényléseket.')}</div>
+    `;
   }
+}
 
 function formatRequestStatus(status) {
   const value = String(status || 'pending').toLowerCase();
