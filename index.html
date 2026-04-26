@@ -31,7 +31,7 @@
       margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#e2e8f0;color:#0f172a;
     }
     .hidden{display:none!important}
-    .app{min-height:100vh}
+    .app{height:100vh;overflow:hidden}
     .login{
       min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;background:linear-gradient(135deg,#f8fafc,#ffffff,#ecfdf5);
     }
@@ -118,9 +118,9 @@
     .error{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
     .success{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
     .warn{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
-    .shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .shell{display:grid;grid-template-columns:280px 1fr;height:100vh;min-height:0;overflow:hidden}
     .sidebar{
-      background:linear-gradient(180deg,#020617,#111827);color:#fff;padding:18px;border-right:1px solid #1f2937;display:flex;flex-direction:column
+      background:linear-gradient(180deg,#020617,#111827);color:#fff;padding:18px;border-right:1px solid #1f2937;display:flex;flex-direction:column;height:100vh;overflow-y:auto;min-height:0
     }
     .brand{
       padding:18px;border-bottom:1px solid #1f2937;margin-bottom:16px
@@ -224,14 +224,15 @@
     .nav-btn.active{background:var(--green);color:#fff}
     .nav-btn:hover{background:#0f172a;color:#fff}
     .logout-wrap{margin-top:auto}
-    .content{padding:28px}
+    .content{padding:28px;height:100vh;min-height:0;overflow:hidden;display:flex;flex-direction:column}
     .topbar{
+      flex:0 0 auto;
       background:#fff;border-radius:24px;padding:18px 20px;box-shadow:0 4px 20px rgba(15,23,42,.05);display:flex;justify-content:space-between;align-items:center;gap:14px
     }
     .badge{
       display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-size:13px;font-weight:700;background:#e2e8f0;color:#0f172a
     }
-    .page{margin-top:24px}
+    .page{margin-top:24px;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding-right:6px}
     .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
     .card{
       background:#fff;border-radius:22px;padding:18px;box-shadow:0 4px 20px rgba(15,23,42,.05)
@@ -257,7 +258,57 @@
       width:min(760px,100%);background:#fff;border-radius:28px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.25)
     }
     .table{width:100%;border-collapse:collapse}
+    .status-pill{display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
+    .status-active-pill{background:#dcfce7;color:#166534}
+    .status-inactive-pill{background:#fee2e2;color:#991b1b}
+
+    .admin-users-layout{height:100%;min-height:0;align-items:stretch}
+    .admin-scroll-card{max-height:100%;min-height:0;overflow-y:auto}
+    .admin-detail-panel{max-height:100%;min-height:0;overflow-y:auto;padding-right:4px}
+    .page::-webkit-scrollbar,.sidebar::-webkit-scrollbar,.admin-scroll-card::-webkit-scrollbar,.admin-detail-panel::-webkit-scrollbar{width:10px}
+    .page::-webkit-scrollbar-thumb,.sidebar::-webkit-scrollbar-thumb,.admin-scroll-card::-webkit-scrollbar-thumb,.admin-detail-panel::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
+    .page::-webkit-scrollbar-track,.sidebar::-webkit-scrollbar-track,.admin-scroll-card::-webkit-scrollbar-track,.admin-detail-panel::-webkit-scrollbar-track{background:transparent}
     .table th,.table td{padding:12px;border-bottom:1px solid #e2e8f0;text-align:left;font-size:14px}
+
+
+    /* Modern admin felület */
+    body{background:radial-gradient(circle at top left,#eefcf6 0,#e2e8f0 32%,#dbeafe 100%)}
+    .topbar{border:1px solid rgba(226,232,240,.9);box-shadow:0 18px 45px rgba(15,23,42,.08)}
+    .card{border:1px solid rgba(226,232,240,.95);box-shadow:0 16px 40px rgba(15,23,42,.07)}
+    .admin-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+    .admin-page-kicker{font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#10b981;margin-bottom:8px}
+    .admin-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+    .admin-stat-card{background:linear-gradient(180deg,#ffffff,#f8fafc);border:1px solid #e2e8f0;border-radius:22px;padding:16px;box-shadow:0 14px 32px rgba(15,23,42,.06)}
+    .admin-stat-label{font-size:12px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em}
+    .admin-stat-value{font-size:24px;font-weight:900;margin-top:6px;color:#0f172a}
+    .admin-section-card{background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border:1px solid rgba(226,232,240,.95);border-radius:28px;padding:18px;box-shadow:0 18px 50px rgba(15,23,42,.08)}
+    .admin-section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .admin-section-title{font-size:20px;font-weight:900;color:#0f172a}
+    .admin-soft-divider{border:none;border-top:1px solid #e2e8f0;margin:18px 0}
+    .admin-toolbar{display:grid;grid-template-columns:1.35fr .65fr;gap:10px;margin-bottom:14px}
+    .admin-user-list{display:grid;gap:10px}
+    .admin-user-card{position:relative;margin:0;border:1px solid #e2e8f0;border-radius:20px;padding:14px;background:linear-gradient(180deg,#fff,#f8fafc);transition:transform .16s ease,box-shadow .25s ease,border-color .25s ease}
+    .admin-user-card:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(15,23,42,.10);background:#fff}
+    .admin-user-card.active{border-color:#34d399;background:linear-gradient(135deg,#ecfdf5,#ffffff);box-shadow:0 14px 34px rgba(16,185,129,.16)}
+    .admin-user-name-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .admin-user-name{font-size:16px;font-weight:900;color:#0f172a}
+    .admin-user-meta{font-size:12px;color:#64748b;margin-top:5px;line-height:1.45}
+    .admin-detail-hero{background:linear-gradient(135deg,#0f172a,#064e3b);color:#fff;border:none;overflow:hidden;position:relative}
+    .admin-detail-hero::after{content:'';position:absolute;right:-80px;top:-80px;width:220px;height:220px;border-radius:999px;background:rgba(255,255,255,.09)}
+    .admin-detail-hero .card-title{color:#cbd5e1}
+    .admin-detail-hero .status-active-pill{background:rgba(220,252,231,.16);color:#bbf7d0;border:1px solid rgba(187,247,208,.25)}
+    .admin-detail-hero .status-inactive-pill{background:rgba(254,226,226,.16);color:#fecaca;border:1px solid rgba(254,202,202,.25)}
+    .admin-metric-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}
+    .admin-metric-card{padding:14px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+    .admin-metric-value{font-weight:900;margin-top:6px;color:#fff}
+    .admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .admin-actions-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .danger-btn{border-color:#fecaca!important;color:#991b1b!important;background:#fff5f5!important}
+    .danger-btn:hover{background:#fee2e2!important}
+    .input:focus,.select:focus,.textarea:focus{outline:none;border-color:#34d399;box-shadow:0 0 0 4px rgba(52,211,153,.15)}
+    .status-pill{border:1px solid transparent}
+    .badge{box-shadow:inset 0 0 0 1px rgba(15,23,42,.04)}
+    @media (max-width: 1200px){.admin-stat-row,.admin-metric-grid{grid-template-columns:repeat(2,1fr)}.admin-toolbar{grid-template-columns:1fr}.admin-form-grid{grid-template-columns:1fr}}
     @media (max-width: 1100px){
       .cards{grid-template-columns:repeat(2,1fr)}
       .grid-2{grid-template-columns:1fr}
@@ -268,7 +319,7 @@
       .sidebar{display:none}
       .cards{grid-template-columns:1fr}
       .info-grid{grid-template-columns:1fr}
-      .content{padding:16px}
+      .content{padding:16px;height:100vh}
       .topbar{flex-direction:column;align-items:flex-start}
 
 .request-badge{
@@ -297,6 +348,30 @@
   color:#991b1b;
 }
     }
+  
+
+    .toast-wrap{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:9999}
+    .toast{min-width:260px;max-width:420px;padding:13px 15px;border-radius:16px;background:#0f172a;color:#fff;box-shadow:0 16px 40px rgba(2,6,23,.25);font-weight:700;animation:toastIn .22s ease}
+    .toast.success{background:#065f46}.toast.error{background:#991b1b}.toast.warn{background:#92400e}
+    @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    .perf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}
+    .perf-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:14px}
+    .perf-value{font-size:22px;font-weight:900;margin-top:4px}
+    .perf-bar-wrap{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:8px}
+    .perf-bar{height:100%;background:linear-gradient(90deg,#10b981,#22c55e);border-radius:999px}
+    .discipline-item{border-left:5px solid #f59e0b}
+    .discipline-high{border-left-color:#ef4444}.discipline-medium{border-left-color:#f59e0b}.discipline-low{border-left-color:#10b981}
+    .realtime-dot{display:inline-block;width:8px;height:8px;border-radius:999px;background:#10b981;margin-right:6px;box-shadow:0 0 0 4px rgba(16,185,129,.15)}
+    @media (max-width:1100px){.perf-grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:700px){.perf-grid{grid-template-columns:1fr}}
+
+    .btn.loading{opacity:.72;pointer-events:none;position:relative}.btn.loading::after{content:'';display:inline-block;width:12px;height:12px;margin-left:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px}@keyframes spin{to{transform:rotate(360deg)}}
+    .confirm-modal{position:fixed;inset:0;background:rgba(2,6,23,.62);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9998}.confirm-card{width:min(460px,100%);background:#fff;border-radius:26px;padding:22px;box-shadow:0 30px 80px rgba(2,6,23,.35)}
+    .shift-hero{background:linear-gradient(135deg,#064e3b,#0f172a);color:white;position:relative;overflow:hidden}.shift-hero::after{content:'';position:absolute;inset:auto -80px -120px auto;width:260px;height:260px;background:rgba(255,255,255,.08);border-radius:999px}.shift-clock{font-size:46px;font-weight:950;letter-spacing:.04em;margin:18px 0 8px}.shift-live-dot{width:10px;height:10px;border-radius:50%;background:#34d399;display:inline-block;margin-right:8px;box-shadow:0 0 0 6px rgba(52,211,153,.15);animation:pulse 1.4s infinite}@keyframes pulse{50%{transform:scale(.72)}}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.leaderboard-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #e2e8f0}.leaderboard-item:last-child{border-bottom:none}.rank-bubble{width:32px;height:32px;border-radius:12px;background:#ecfdf5;color:#065f46;display:inline-flex;align-items:center;justify-content:center;font-weight:900;margin-right:10px}
+    @media (max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr)}}@media (max-width:650px){.stats-grid{grid-template-columns:1fr}.shift-clock{font-size:34px}}
+
   </style>
 </head>
 <body>
@@ -311,6 +386,7 @@
       <div class="feature">Könnyű kezelés.</div>
       <div class="feature">Gyors Feldolgozás.</div>
       <div class="feature">Életmentők online fő adatkezelési felülete.</div>
+      <div class="feature">Ha elfelejtetted a jelszavadat, keresd fel a rendszergazdát! ((halasz))</div>
       <div class="feature">Amennyiben nincs hozzáférésed az oldalhoz, de az omsz köreiben dolgozol keresd fel a rendszergazdát!((halasz))</div>
     </div>
 
@@ -376,6 +452,7 @@
 
         <div id="adminNav" class="hidden">
           <button class="nav-btn active" data-page="admin-users">Felhasználók</button>
+          <button class="nav-btn" data-page="admin-stats">Statisztika</button>
           <button class="nav-btn" data-page="admin-vehicles">Jármű igénylések</button>
         </div>
 
@@ -392,6 +469,7 @@
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <span class="badge" id="stationBadge">-</span>
+            <span class="badge"><span class="realtime-dot"></span>Live</span>
             <span class="badge" id="timerBadge">Automatikus kijelentkezés: 30:00</span>
           </div>
         </div>
@@ -427,9 +505,13 @@
     profile: null,
     user: null,
     selectedAdminUser: null,
+    adminUserSearch: '',
+    adminUserRoleFilter: 'all',
     lastActivity: Date.now(),
     timer: null,
-    modalReport: null
+    modalReport: null,
+    shiftTicker: null,
+    realtimeChannel: null
   };
 
   let bootstrapping = false;
@@ -437,6 +519,55 @@
 
   const el = (id) => document.getElementById(id);
   const qsa = (s) => Array.from(document.querySelectorAll(s));
+
+  function showToast(message, type = 'success') {
+    let wrap = el('toastWrap');
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.id = 'toastWrap';
+      wrap.className = 'toast-wrap';
+      document.body.appendChild(wrap);
+    }
+    const item = document.createElement('div');
+    item.className = 'toast ' + type;
+    item.textContent = message;
+    wrap.appendChild(item);
+    setTimeout(() => item.remove(), 3200);
+  }
+
+  function setButtonLoading(button, loading, text) {
+    if (!button) return;
+    if (loading) {
+      button.dataset.originalText = button.textContent;
+      button.textContent = text || button.textContent;
+      button.classList.add('loading');
+      button.disabled = true;
+    } else {
+      button.textContent = button.dataset.originalText || button.textContent;
+      button.classList.remove('loading');
+      button.disabled = false;
+    }
+  }
+
+  function confirmDialog(message, title = 'Megerősítés') {
+    return new Promise(resolve => {
+      const modal = document.createElement('div');
+      modal.className = 'confirm-modal';
+      modal.innerHTML = `
+        <div class="confirm-card">
+          <div style="font-size:22px;font-weight:900;margin-bottom:8px">${escapeHtml(title)}</div>
+          <div class="muted" style="line-height:1.5;margin-bottom:18px">${escapeHtml(message)}</div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn btn-secondary confirm-cancel">Mégsem</button>
+            <button class="btn btn-primary confirm-ok">Megerősítem</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+      modal.querySelector('.confirm-cancel').onclick = () => { modal.remove(); resolve(false); };
+      modal.querySelector('.confirm-ok').onclick = () => { modal.remove(); resolve(true); };
+      modal.onclick = (e) => { if (e.target === modal) { modal.remove(); resolve(false); } };
+    });
+  }
 
   function setMode(mode) {
     state.mode = mode;
@@ -520,10 +651,21 @@
       state.user = user;
       state.profile = await fetchMyProfile();
 
+      if (state.profile.role !== 'admin' && isInactiveProfile(state.profile.status)) {
+        await cleanupRealtimeNotifications();
+      await sb.auth.signOut();
+        state.user = null;
+        state.profile = null;
+        showLogin();
+        setLoginMessage('error', 'A fiókod jelenleg inaktív. Keresd a vezetőséget.');
+        return;
+      }
+
       showApp();
       startAutoLogout();
       bindNavByRole();
       await renderCurrentPage();
+      setupRealtimeNotifications();
     } catch (err) {
       console.error('bootstrapApp hiba:', err);
       setLoginMessage('error', err.message || 'Hiba az alkalmazás indításakor.');
@@ -608,6 +750,129 @@
 
     if (error) throw error;
     return data || [];
+  }
+
+
+  async function fetchAllServiceLogs() {
+    const { data, error } = await sb
+      .from('service_logs')
+      .select('*')
+      .order('service_date', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function fetchAllReports() {
+    const { data, error } = await sb
+      .from('reports')
+      .select('*')
+      .order('report_date', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+
+
+  async function fetchUserDisciplinaryRecords(userId) {
+    const { data, error } = await sb
+      .from('disciplinary_records')
+      .select('*')
+      .eq('employee_id', userId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function fetchMyDisciplinaryRecords() {
+    const { data, error } = await sb
+      .from('disciplinary_records')
+      .select('*')
+      .eq('employee_id', state.user.id)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }
+
+  async function createDisciplinaryRecord(payload) {
+    const { data, error } = await sb
+      .from('disciplinary_records')
+      .insert({ issued_by: state.user.id, ...payload })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function deleteDisciplinaryRecord(recordId) {
+    const { error } = await sb
+      .from('disciplinary_records')
+      .delete()
+      .eq('id', recordId);
+    if (error) throw error;
+  }
+
+  function setupRealtimeNotifications() {
+    if (!state.user || state.realtimeChannel) return;
+    const channel = sb.channel('portal-live-notifications')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reports' }, () => {
+        if (state.profile?.role === 'admin') showToast('Új jelentés érkezett.', 'success');
+        if (state.profile?.role === 'admin' && state.page === 'admin-stats') renderCurrentPage();
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'vehicle_requests' }, () => {
+        if (state.profile?.role === 'admin') showToast('Új járműigénylés érkezett.', 'warn');
+        if (state.profile?.role === 'admin' && state.page === 'admin-vehicles') renderCurrentPage();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'disciplinary_records' }, (payload) => {
+        if (state.profile?.role === 'admin') showToast('Fegyelmi bejegyzés frissült.', 'warn');
+        if (payload?.new?.employee_id === state.user.id || payload?.old?.employee_id === state.user.id) showToast('Fegyelmi nyilvántartásod frissült.', 'warn');
+        if (state.page === 'admin-users' || state.page === 'overview') renderCurrentPage();
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') showToast('Valós idejű értesítések aktívak.', 'success');
+      });
+    state.realtimeChannel = channel;
+  }
+
+  async function cleanupRealtimeNotifications() {
+    if (state.realtimeChannel) {
+      await sb.removeChannel(state.realtimeChannel);
+      state.realtimeChannel = null;
+    }
+  }
+
+
+  async function updateProfileAdmin(userId, payload) {
+    const { data, error } = await sb
+      .from('profiles')
+      .update(payload)
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+
+  async function adminUserAction(action, payload = {}) {
+    const { data, error } = await sb.functions.invoke('admin-users', {
+      body: { action, ...payload }
+    });
+
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    return data;
+  }
+
+  async function adminCreateUser(payload) {
+    return adminUserAction('create', payload);
+  }
+
+  async function adminSetUserPassword(userId, newPassword) {
+    return adminUserAction('set-password', { userId, newPassword });
+  }
+
+  async function adminDeleteUser(userId) {
+    return adminUserAction('delete', { userId });
   }
 
   async function createServiceLog(payload) {
@@ -758,6 +1023,7 @@
         state.timer = null;
       }
 
+      await cleanupRealtimeNotifications();
       await sb.auth.signOut();
 
       state.profile = null;
@@ -773,7 +1039,7 @@
     }
   }
 
-  function overviewHTML(profile, reportsCount = 0) {
+  function overviewHTML(profile, reportsCount = 0, disciplinaryRecords = []) {
     return `
       <div class="section-title">Áttekintés</div>
       <div class="section-desc">A saját dolgozói adataid és összesítéseid.</div>
@@ -783,6 +1049,18 @@
         <div class="card"><div class="card-title">Kiosztott jármű</div><div class="card-value" style="font-size:18px">${profile.assigned_vehicle || 'Nincs kiosztva'}</div></div>
         <div class="card"><div class="card-title">Állomás</div><div class="card-value" style="font-size:18px">${profile.station || 'Nincs megadva'}</div></div>
       </div>
+
+      ${disciplinaryRecords.length ? `
+        <div class="card" style="margin-top:18px">
+          <div style="font-size:22px;font-weight:800;margin-bottom:14px">Fegyelmi nyilvántartás</div>
+          ${disciplinaryRecords.map(d => `
+            <div class="list-item discipline-item ${disciplineClass(d.severity)}" style="cursor:default">
+              <div style="display:flex;justify-content:space-between;gap:12px"><b>${escapeHtml(d.title || '-')}</b><span class="badge">${escapeHtml(formatSeverity(d.severity))}</span></div>
+              <div class="small muted" style="margin-top:4px">${new Date(d.created_at).toLocaleString('hu-HU')}</div>
+              <div class="small" style="margin-top:8px">${escapeHtml(d.description || '')}</div>
+            </div>
+          `).join('')}
+        </div>` : ''}
 
       <div class="grid-2" style="margin-top:18px">
         <div class="card">
@@ -807,55 +1085,142 @@
     `;
   }
 
-function serviceFormHTML() {
-  const today = new Date().toISOString().slice(0, 10);
+
+function getShiftKey() {
+  return state.user ? `omsz_active_shift_${state.user.id}` : 'omsz_active_shift';
+}
+
+function getActiveShift() {
+  try { return JSON.parse(localStorage.getItem(getShiftKey()) || 'null'); } catch (_) { return null; }
+}
+
+function saveActiveShift(shift) {
+  localStorage.setItem(getShiftKey(), JSON.stringify(shift));
+}
+
+function clearActiveShift() {
+  localStorage.removeItem(getShiftKey());
+}
+
+function formatDuration(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function serviceFormHTML(logs = []) {
+  const activeShift = getActiveShift();
+  const todayLogs = logs.slice(0, 8);
 
   return `
     <div class="section-title">Szolgálati idő</div>
-    <div class="section-desc">Új szolgálati idő rögzítése.</div>
-    <div class="card">
-      <div class="row">
-        <div class="field">
-          <label class="label">Dátum</label>
-          <input id="serviceDate" class="input" type="date" value="${today}" />
-        </div>
+    <div class="section-desc">Nyomd meg a zöld gombot a szolgálati idő számlálásának elkezdéséhez. Ne felejtsd el kikapcsolni ha kiléptél a szolgálatból!</div>
 
-        <div class="field">
-          <label class="label">műszak elkezdése</label>
-          <input
-            id="serviceStart"
-            class="input"
-            type="text"
-            inputmode="numeric"
-            placeholder="pl. 16:43"
-            value="08:00"
-            maxlength="5"
-          />
-        </div>
+    <div class="grid-2">
+      <div class="card shift-hero">
+        <div style="position:relative;z-index:1">
+          <div style="font-size:14px;color:#bbf7d0;font-weight:800">${activeShift ? '<span class="shift-live-dot"></span>Futó műszak' : 'Nincs futó műszak'}</div>
+          <div id="shiftClock" class="shift-clock">${activeShift ? formatDuration(Date.now() - new Date(activeShift.startedAt).getTime()) : '00:00:00'}</div>
+          <div style="color:#d1fae5;margin-bottom:18px">
+            ${activeShift ? `Indítva: ${new Date(activeShift.startedAt).toLocaleString('hu-HU')}` : 'Nyomd meg a műszak indítása gombot, amikor szolgálatba állsz.'}
+          </div>
 
-        <div class="field">
-          <label class="label">Műszak befejezése</label>
-          <input
-            id="serviceEnd"
-            class="input"
-            type="text"
-            inputmode="numeric"
-            placeholder="pl. 20:23"
-            value="16:00"
-            maxlength="5"
-          />
+          <div class="field">
+            <label class="label" style="color:#d1fae5">Megjegyzés</label>
+            <textarea id="shiftNote" class="textarea" placeholder="Pl. ESETKOCSI-s szolgálat...">${escapeHtml(activeShift?.note || '')}</textarea>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            ${activeShift
+              ? '<button id="stopShiftBtn" class="btn btn-primary">Műszak befejezése</button><button id="cancelShiftBtn" class="btn btn-secondary">Futó műszak elvetése</button>'
+              : '<button id="startShiftBtn" class="btn btn-primary">Műszak indítása</button>'}
+          </div>
+          <div id="serviceMsg"></div>
         </div>
       </div>
 
-      <div class="field">
-        <label class="label">Megjegyzés</label>
-        <textarea id="serviceNote" class="textarea" placeholder="Rövid megjegyzés..."></textarea>
+      <div class="card">
+        <div style="font-size:22px;font-weight:800;margin-bottom:14px">Legutóbbi szolgálatok</div>
+        ${todayLogs.length ? todayLogs.map(log => `
+          <div class="list-item" style="cursor:default">
+            <div style="display:flex;justify-content:space-between;gap:12px">
+              <div>
+                <div style="font-weight:800">${escapeHtml(log.service_date || '-')}</div>
+                <div class="small muted" style="margin-top:4px">${escapeHtml(log.start_time || '-')} - ${escapeHtml(log.end_time || '-')}</div>
+              </div>
+              <div class="badge">${log.minutes || 0} perc</div>
+            </div>
+            <div class="small" style="margin-top:8px">${escapeHtml(log.note || '')}</div>
+          </div>
+        `).join('') : '<div class="muted">Még nincs rögzített szolgálat.</div>'}
       </div>
-
-      <button id="saveServiceBtn" class="btn btn-primary">Szolgálati idő leadása</button>
-      <div id="serviceMsg"></div>
     </div>
   `;
+}
+
+function startShiftTicker() {
+  if (state.shiftTicker) clearInterval(state.shiftTicker);
+  const activeShift = getActiveShift();
+  if (!activeShift) return;
+  state.shiftTicker = setInterval(() => {
+    const clock = el('shiftClock');
+    if (clock) clock.textContent = formatDuration(Date.now() - new Date(activeShift.startedAt).getTime());
+  }, 1000);
+}
+
+function bindShiftActions() {
+  startShiftTicker();
+  const startBtn = el('startShiftBtn');
+  if (startBtn) {
+    startBtn.onclick = () => {
+      const note = el('shiftNote')?.value.trim() || '';
+      saveActiveShift({ startedAt: new Date().toISOString(), note });
+      showToast('Műszak elindítva.', 'success');
+      renderCurrentPage();
+    };
+  }
+
+  const stopBtn = el('stopShiftBtn');
+  if (stopBtn) {
+    stopBtn.onclick = async () => {
+      try {
+        const shift = getActiveShift();
+        if (!shift) return;
+        setButtonLoading(stopBtn, true, 'Mentés...');
+        const started = new Date(shift.startedAt);
+        const ended = new Date();
+        const minutes = Math.max(1, Math.round((ended - started) / 60000));
+        const note = el('shiftNote')?.value.trim() || shift.note || '';
+        await createServiceLog({
+          service_date: started.toISOString().slice(0, 10),
+          start_time: started.toTimeString().slice(0, 5),
+          end_time: ended.toTimeString().slice(0, 5),
+          minutes,
+          note
+        });
+        clearActiveShift();
+        state.profile = await fetchMyProfile();
+        showToast('Műszak lezárva és mentve.', 'success');
+        await renderCurrentPage();
+      } catch (err) {
+        showToast(err.message || 'Nem sikerült menteni a műszakot.', 'error');
+      } finally {
+        setButtonLoading(stopBtn, false);
+      }
+    };
+  }
+
+  const cancelBtn = el('cancelShiftBtn');
+  if (cancelBtn) {
+    cancelBtn.onclick = async () => {
+      if (!(await confirmDialog('Biztosan elveted a futó műszakot? Ez nem kerül mentésre.', 'Műszak elvetése'))) return;
+      clearActiveShift();
+      showToast('Futó műszak elvetve.', 'warn');
+      renderCurrentPage();
+    };
+  }
 }
 
 function isValidTimeString(value) {
@@ -878,12 +1243,13 @@ function isValidTimeString(value) {
           </div>
 
           <div class="field">
-            <label class="label">Prioritás</label>
+            <label class="label">Prioritás (( P1 - Legsúlyosabb, P5 - Betegszállítás villogó nélkül ))</label>
             <select id="reportPriority" class="select">
-              <option>Alacsony</option>
-              <option selected>Normál</option>
-              <option>Magas</option>
-              <option>Kritikus</option>
+              <option>P5</option>
+              <option>P4</option>
+              <option selected>P3</option>
+              <option>P2</option>
+              <option>P1</option>
             </select>
           </div>
 
@@ -924,13 +1290,18 @@ function isValidTimeString(value) {
         <div class="field">
           <label class="label">Jármű típusa</label>
           <select id="vehicleType" class="select">
-            <option>Volkswagen Crafter Profile</option>
-            <option>Mercedes-Benz Sprinter II Facelift profile</option>
-            <option>Suzuki Grand Vitara</option>
-            <option>Suzuki S-Cross</option>
-            <option>Opel Astra JX</option>
-            <option>Opel Astra J légi mentők-légirendészet</option>
-            <option>Skoda Octavia III Facelift</option>
+            <option>Skoda Octavia 1</option>
+            <option>Skoda Octavia 2</option>
+            <option>Opel Astra J</option>
+            <option>Opel Astra J Légimentők</option>
+            <option>Mercedes Sprinter nagy roko</option>
+            <option>Mercedes Sprinter kicsi roko</option>
+            <option>Mercedes Sprinter eset</option>
+            <option>Mercedes Sprinter mgk</option>
+            <option>Volkswagen Crafter</option>
+            <option>Mercedes Benz Sprinter Orvosi Ügyelet</option>
+            <option>Nissan Pahtfinder Orvosi Ügyelet</option>
+            <option>Skoda Fabia Orvosi Ügyelet</option>
           </select>
         </div>
 
@@ -1022,36 +1393,231 @@ function formatRequestStatus(status) {
     }).length;
   }
 
-  function adminUsersHTML(users, selected, logs, reports) {
-    return `
-      <div class="section-title">Felhasználók</div>
-      <div class="section-desc">Vezetőségi portál. Mentő dolgozók fontos információi, igényléseik áttekintésére szolgál.</div>
+  function isInactiveProfile(status) {
+    return String(status || '').trim().toLowerCase() === 'inaktív' || String(status || '').trim().toLowerCase() === 'inactive';
+  }
 
-      <div class="grid-2" style="grid-template-columns:.9fr 1.1fr">
-        <div class="card">
-          <div style="font-size:22px;font-weight:800;margin-bottom:14px">Felhasználói lista</div>
-          ${users.map(u => `
-            <div class="list-item admin-user-item ${selected && selected.id === u.id ? 'active' : ''}" data-userid="${u.id}">
-              <div style="font-weight:800">${escapeHtml(u.full_name || '-')}</div>
-              <div class="small muted" style="margin-top:4px">${escapeHtml(u.employee_code || '-')} • ${escapeHtml(u.rank || '-')}</div>
+  function formatProfileStatus(status) {
+    return isInactiveProfile(status) ? 'Inaktív' : 'Aktív';
+  }
+
+  function filterAdminUsers(users) {
+    const search = String(state.adminUserSearch || '').trim().toLowerCase();
+    const roleFilter = String(state.adminUserRoleFilter || 'all');
+
+    return (users || []).filter(u => {
+      const matchesSearch = !search || [
+        u.full_name,
+        u.employee_code,
+        u.rank,
+        u.station,
+        u.status,
+        u.assigned_vehicle,
+        u.role
+      ].some(value => String(value || '').toLowerCase().includes(search));
+
+      const matchesRole = roleFilter === 'all' || String(u.role || 'user') === roleFilter;
+      return matchesSearch && matchesRole;
+    });
+  }
+
+
+  function formatSeverity(severity) {
+    const value = String(severity || 'medium').toLowerCase();
+    if (value === 'high') return 'Súlyos';
+    if (value === 'low') return 'Enyhe';
+    return 'Közepes';
+  }
+
+  function disciplineClass(severity) {
+    const value = String(severity || 'medium').toLowerCase();
+    if (value === 'high') return 'discipline-high';
+    if (value === 'low') return 'discipline-low';
+    return 'discipline-medium';
+  }
+
+  function performanceProfileHTML(selected, logs, reports, disciplinaryRecords) {
+    const totalMinutes = logs.reduce((sum, l) => sum + Number(l.minutes || 0), 0);
+    const totalHours = Math.round(totalMinutes / 60 * 10) / 10;
+    const { monday, sunday } = getWeekBounds(new Date());
+    const weeklyMinutes = logs.filter(l => { const d = new Date(l.service_date); return d >= monday && d <= sunday; }).reduce((sum, l) => sum + Number(l.minutes || 0), 0);
+    const reportCount = reports.length;
+    const disciplineCount = disciplinaryRecords.length;
+    const activityScore = Math.min(100, Math.round((weeklyMinutes / 1800) * 60 + Math.min(reportCount, 10) * 3 - disciplineCount * 8));
+    const safeScore = Math.max(0, activityScore);
+    return `
+      <div class="admin-section-card" style="margin-bottom:16px">
+        <div class="admin-section-header"><div class="admin-section-title">Teljesítmény profil</div><span class="badge">Aktivitás</span></div>
+        <div class="perf-grid">
+          <div class="perf-card"><div class="card-title">Összes szolgálat</div><div class="perf-value">${totalHours} óra</div></div>
+          <div class="perf-card"><div class="card-title">Heti szolgálat</div><div class="perf-value">${Math.round(weeklyMinutes / 60 * 10) / 10} óra</div></div>
+          <div class="perf-card"><div class="card-title">Jelentések</div><div class="perf-value">${reportCount} db</div></div>
+          <div class="perf-card"><div class="card-title">Fegyelmi</div><div class="perf-value">${disciplineCount} db</div></div>
+        </div>
+        <div style="margin-top:14px"><b>Aktivitási pontszám:</b> ${safeScore}/100<div class="perf-bar-wrap"><div class="perf-bar" style="width:${safeScore}%"></div></div></div>
+      </div>
+    `;
+  }
+
+  function disciplinaryAdminHTML(records) {
+    return `
+      <div class="admin-section-card" style="margin-bottom:16px">
+        <div class="admin-section-header"><div class="admin-section-title">Fegyelmi rendszer</div><span class="badge">${records.length} bejegyzés</span></div>
+        <div class="admin-form-grid">
+          <div class="field"><label class="label">Cím</label><input id="disciplineTitle" class="input" placeholder="Pl. Szabályszegés / figyelmeztetés" /></div>
+          <div class="field"><label class="label">Súlyosság</label><select id="disciplineSeverity" class="select"><option value="low">Enyhe</option><option value="medium" selected>Közepes</option><option value="high">Súlyos</option></select></div>
+        </div>
+        <div class="field"><label class="label">Leírás</label><textarea id="disciplineDescription" class="textarea" placeholder="Rövid indoklás / megjegyzés..."></textarea></div>
+        <button id="addDisciplineBtn" class="btn btn-primary">Fegyelmi bejegyzés hozzáadása</button>
+        <div id="disciplineMsg"></div>
+        <hr class="admin-soft-divider" />
+        ${records.length ? records.map(d => `
+          <div class="list-item discipline-item ${disciplineClass(d.severity)}" style="cursor:default">
+            <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+              <div><div style="font-weight:900">${escapeHtml(d.title || '-')}</div><div class="small muted" style="margin-top:4px">${new Date(d.created_at).toLocaleString('hu-HU')} • ${escapeHtml(formatSeverity(d.severity))}</div></div>
+              <button class="btn btn-secondary delete-discipline-btn" data-id="${d.id}">Törlés</button>
             </div>
-          `).join('')}
+            <div class="small" style="margin-top:8px">${escapeHtml(d.description || '')}</div>
+          </div>
+        `).join('') : '<div class="muted">Nincs fegyelmi bejegyzés.</div>'}
+      </div>
+    `;
+  }
+
+  function adminUsersHTML(users, selected, logs, reports, disciplinaryRecords = []) {
+    const filteredUsers = filterAdminUsers(users);
+    const totalUsers = users.length;
+    const shownUsers = filteredUsers.length;
+    const activeUsers = users.filter(u => !isInactiveProfile(u.status)).length;
+    const inactiveUsers = users.filter(u => isInactiveProfile(u.status)).length;
+    const adminUsers = users.filter(u => String(u.role || 'user') === 'admin').length;
+    const selectedInactive = selected ? isInactiveProfile(selected.status) : false;
+    const selectedStatusLabel = selected ? formatProfileStatus(selected.status) : '';
+    const toggleStatusText = selectedInactive ? 'Felhasználó aktiválása' : 'Felhasználó inaktiválása';
+
+    return `
+      <div class="admin-page-head">
+        <div>
+          <div class="admin-page-kicker">Vezetőségi felület</div>
+          <div class="section-title" style="margin-bottom:4px">Felhasználók</div>
+          <div class="section-desc" style="margin-bottom:0">Dolgozók létrehozása, keresése, szerkesztése és fiókkezelése egy helyen.</div>
+        </div>
+        <span class="badge">${shownUsers}/${totalUsers} találat</span>
+      </div>
+
+      <div class="admin-stat-row">
+        <div class="admin-stat-card"><div class="admin-stat-label">Összes fiók</div><div class="admin-stat-value">${totalUsers}</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-label">Aktív</div><div class="admin-stat-value">${activeUsers}</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-label">Inaktív</div><div class="admin-stat-value">${inactiveUsers}</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-label">Admin</div><div class="admin-stat-value">${adminUsers}</div></div>
+      </div>
+
+      <div class="grid-2 admin-users-layout" style="grid-template-columns:.9fr 1.1fr">
+        <div class="admin-section-card admin-scroll-card">
+          <div class="admin-section-header">
+            <div class="admin-section-title">Új felhasználó</div>
+            <span class="badge">Auth + profil</span>
+          </div>
+
+          <div class="field"><label class="label">Teljes név</label><input id="adminNewFullName" class="input" placeholder="Pl. Kovács Péter" /></div>
+          <div class="field"><label class="label">Dolgozókód / felhasználónév</label><input id="adminNewEmployeeCode" class="input" placeholder="Pl. OMSZ001" /></div>
+          <div class="field"><label class="label">Kezdő jelszó</label><input id="adminNewPassword" class="input" type="password" placeholder="Minimum 6 karakter" /></div>
+          <div class="row">
+            <div class="field"><label class="label">Beosztás / rang</label><input id="adminNewRank" class="input" value="Mentődolgozó" /></div>
+            <div class="field"><label class="label">Állomás</label><input id="adminNewStation" class="input" value="Nincs megadva" /></div>
+          </div>
+          <div class="field"><label class="label">Jogosultság</label><select id="adminNewRole" class="select"><option value="user" selected>Dolgozó</option><option value="admin">Admin</option></select></div>
+          <button id="createAdminUserBtn" class="btn btn-primary" style="width:100%">+ Felhasználó létrehozása</button>
+          <div id="adminCreateUserMsg"></div>
+          <hr class="admin-soft-divider" />
+
+          <div class="admin-section-header">
+            <div class="admin-section-title">Felhasználói lista</div>
+            <span class="badge">${shownUsers}/${totalUsers}</span>
+          </div>
+
+          <div class="admin-toolbar">
+            <div class="field" style="margin-bottom:0">
+              <label class="label">Keresés</label>
+              <input id="adminUserSearch" class="input" placeholder="Név, dolgozókód, rang, állomás..." value="${escapeHtml(state.adminUserSearch || '')}" />
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label class="label">Jogosultság</label>
+              <select id="adminUserRoleFilter" class="select">
+                <option value="all" ${state.adminUserRoleFilter === 'all' ? 'selected' : ''}>Összes</option>
+                <option value="user" ${state.adminUserRoleFilter === 'user' ? 'selected' : ''}>Dolgozó</option>
+                <option value="admin" ${state.adminUserRoleFilter === 'admin' ? 'selected' : ''}>Admin</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="admin-user-list">
+            ${filteredUsers.length ? filteredUsers.map(u => `
+              <div class="list-item admin-user-card admin-user-item ${selected && selected.id === u.id ? 'active' : ''}" data-userid="${u.id}">
+                <div class="admin-user-name-row">
+                  <div>
+                    <div class="admin-user-name">${escapeHtml(u.full_name || '-')}</div>
+                    <div class="admin-user-meta">${escapeHtml(u.employee_code || '-')} • ${escapeHtml(u.rank || '-')}<br>${escapeHtml(u.station || '-')} • ${escapeHtml(u.role === 'admin' ? 'Admin' : 'Dolgozó')}</div>
+                  </div>
+                  <span class="status-pill ${isInactiveProfile(u.status) ? 'status-inactive-pill' : 'status-active-pill'}">${escapeHtml(formatProfileStatus(u.status))}</span>
+                </div>
+              </div>
+            `).join('') : '<div class="muted">Nincs találat a keresésre/szűrésre.</div>'}
+          </div>
         </div>
 
-        <div>
+        <div class="admin-detail-panel">
           ${selected ? `
-            <div class="card" style="margin-bottom:16px">
-              <div style="font-size:22px;font-weight:800;margin-bottom:14px">${escapeHtml(selected.full_name)}</div>
-              <div class="cards" style="grid-template-columns:repeat(4,1fr)">
-                <div class="card" style="padding:14px"><div class="card-title">Kiosztott mentőgépkocsi</div><div style="font-weight:800">${escapeHtml(selected.assigned_vehicle || '-')}</div></div>
-                <div class="card" style="padding:14px"><div class="card-title">Heti percek</div><div style="font-weight:800">${selected.weekly_minutes ?? 0} perc</div></div>
-                <div class="card" style="padding:14px"><div class="card-title">Jelentések száma</div><div style="font-weight:800">${reports.length} db</div></div>
-                <div class="card" style="padding:14px"><div class="card-title">Heti jelentések</div><div style="font-weight:800">${countWeeklyReports(reports)} db</div></div>
+            <div class="card admin-detail-hero" style="margin-bottom:16px">
+              <div style="position:relative;z-index:1">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                  <div>
+                    <div style="font-size:26px;font-weight:900;margin-bottom:6px">${escapeHtml(selected.full_name)}</div>
+                    <div style="color:#cbd5e1">${escapeHtml(selected.employee_code || '-')} • ${escapeHtml(selected.rank || '-')} • ${escapeHtml(selected.station || '-')}</div>
+                  </div>
+                  <span class="status-pill ${selectedInactive ? 'status-inactive-pill' : 'status-active-pill'}">${escapeHtml(selectedStatusLabel)}</span>
+                </div>
+                <div class="admin-metric-grid">
+                  <div class="admin-metric-card"><div class="card-title">Jármű</div><div class="admin-metric-value">${escapeHtml(selected.assigned_vehicle || '-')}</div></div>
+                  <div class="admin-metric-card"><div class="card-title">Heti percek</div><div class="admin-metric-value">${selected.weekly_minutes ?? 0} perc</div></div>
+                  <div class="admin-metric-card"><div class="card-title">Jogosultság</div><div class="admin-metric-value">${escapeHtml(selected.role === 'admin' ? 'Admin' : 'Dolgozó')}</div></div>
+                  <div class="admin-metric-card"><div class="card-title">Jelentések</div><div class="admin-metric-value">${reports.length} db</div></div>
+                  <div class="admin-metric-card"><div class="card-title">Heti jelentések</div><div class="admin-metric-value">${countWeeklyReports(reports)} db</div></div>
+                </div>
               </div>
             </div>
 
-            <div class="card" style="margin-bottom:16px">
-              <div style="font-size:22px;font-weight:800;margin-bottom:14px">Szolgálati idők</div>
+            <div class="admin-section-card" style="margin-bottom:16px">
+              <div class="admin-section-header"><div class="admin-section-title">Dolgozói adatok szerkesztése</div><span class="badge">Profil</span></div>
+
+              <div class="admin-form-grid">
+                <div class="field"><label class="label">Teljes név</label><input id="adminEditFullName" class="input" value="${escapeHtml(selected.full_name || '')}" /></div>
+                <div class="field"><label class="label">Dolgozókód</label><input id="adminEditEmployeeCode" class="input" value="${escapeHtml(selected.employee_code || '')}" /></div>
+                <div class="field"><label class="label">Beosztás / rang</label><input id="adminEditRank" class="input" value="${escapeHtml(selected.rank || '')}" /></div>
+                <div class="field"><label class="label">Státusz</label><select id="adminEditStatus" class="select"><option value="Aktív" ${!selectedInactive ? 'selected' : ''}>Aktív</option><option value="Inaktív" ${selectedInactive ? 'selected' : ''}>Inaktív</option></select></div>
+                <div class="field"><label class="label">Állomás</label><input id="adminEditStation" class="input" value="${escapeHtml(selected.station || '')}" /></div>
+                <div class="field"><label class="label">Kiosztott jármű</label><input id="adminEditAssignedVehicle" class="input" value="${escapeHtml(selected.assigned_vehicle || '')}" /></div>
+                <div class="field"><label class="label">Heti percek</label><input id="adminEditWeeklyMinutes" class="input" type="number" min="0" value="${selected.weekly_minutes ?? 0}" /></div>
+                <div class="field"><label class="label">Jogosultság</label><select id="adminEditRole" class="select"><option value="user" ${selected.role === 'user' ? 'selected' : ''}>Dolgozó</option><option value="admin" ${selected.role === 'admin' ? 'selected' : ''}>Admin</option></select></div>
+              </div>
+
+              <button id="saveAdminUserBtn" class="btn btn-primary">Adatok mentése</button>
+              <div id="adminEditMsg"></div>
+            </div>
+
+            ${performanceProfileHTML(selected, logs, reports, disciplinaryRecords)}
+            ${disciplinaryAdminHTML(disciplinaryRecords)}
+
+            <div class="admin-section-card" style="margin-bottom:16px">
+              <div class="admin-section-header"><div class="admin-section-title">Fiókkezelés</div><span class="badge">Auth</span></div>
+              <div class="warn" style="margin-bottom:14px">A jelenlegi jelszót Supabase Auth biztonsági okból nem adja vissza, ezért azt nem lehet megjeleníteni. Itt új jelszót lehet beállítani.</div>
+              <div class="field"><label class="label">Új jelszó</label><input id="adminNewPasswordForSelected" class="input" type="password" placeholder="Minimum 6 karakter" /></div>
+              <div class="admin-actions-row"><button id="setAdminPasswordBtn" class="btn btn-primary">Jelszó módosítása</button><button id="toggleAdminUserStatusBtn" class="btn btn-secondary">${escapeHtml(toggleStatusText)}</button><button id="deleteAdminUserBtn" class="btn btn-secondary danger-btn">Felhasználó törlése</button></div>
+              <div id="adminAccountMsg"></div>
+            </div>
+
+            <div class="admin-section-card" style="margin-bottom:16px">
+              <div class="admin-section-header"><div class="admin-section-title">Szolgálati idők</div><span class="badge">${logs.length} bejegyzés</span></div>
               ${logs.length ? logs.map(log => `
                 <div class="list-item" style="cursor:default">
                   <div style="display:flex;justify-content:space-between;gap:12px">
@@ -1066,8 +1632,8 @@ function formatRequestStatus(status) {
               `).join('') : '<div class="muted">Nincs szolgálati idő bejegyzés.</div>'}
             </div>
 
-            <div class="card">
-              <div style="font-size:22px;font-weight:800;margin-bottom:14px">Jelentések</div>
+            <div class="admin-section-card">
+              <div class="admin-section-header"><div class="admin-section-title">Jelentések</div><span class="badge">${reports.length} db</span></div>
               ${reports.length ? reports.map(r => `
                 <div class="list-item open-report" data-report='${JSON.stringify(r).replace(/'/g, "&apos;")}'>
                   <div style="display:flex;justify-content:space-between;gap:12px">
@@ -1080,7 +1646,69 @@ function formatRequestStatus(status) {
                 </div>
               `).join('') : '<div class="muted">Nincs jelentés.</div>'}
             </div>
-          ` : `<div class="card"><div class="muted">Válassz ki egy felhasználót.</div></div>`}
+          ` : `<div class="admin-section-card"><div class="muted">Válassz ki egy felhasználót.</div></div>`}
+        </div>
+      </div>
+    `;
+  }
+
+
+
+  function adminStatsHTML(users, logs, reports) {
+    const userById = Object.fromEntries(users.map(u => [u.id, u]));
+    const now = new Date();
+    const { monday, sunday } = getWeekBounds(now);
+    const weeklyLogs = logs.filter(l => {
+      const d = new Date(l.service_date);
+      return d >= monday && d <= sunday;
+    });
+    const weeklyReports = reports.filter(r => {
+      const d = new Date(r.report_date);
+      return d >= monday && d <= sunday;
+    });
+    const totalMinutes = weeklyLogs.reduce((sum, l) => sum + Number(l.minutes || 0), 0);
+    const byUser = {};
+    weeklyLogs.forEach(l => { byUser[l.employee_id] = (byUser[l.employee_id] || 0) + Number(l.minutes || 0); });
+    const topService = Object.entries(byUser).sort((a,b)=>b[1]-a[1]).slice(0, 8);
+    const reportByUser = {};
+    weeklyReports.forEach(r => { reportByUser[r.employee_id] = (reportByUser[r.employee_id] || 0) + 1; });
+    const topReports = Object.entries(reportByUser).sort((a,b)=>b[1]-a[1]).slice(0, 8);
+
+    return `
+      <div class="admin-page-head">
+        <div>
+          <div class="admin-page-kicker">Teljesítmény áttekintés</div>
+          <div class="section-title" style="margin-bottom:4px">Statisztika dashboard</div>
+          <div class="section-desc" style="margin-bottom:0">Heti szolgálati idők, jelentések és aktivitási toplisták.</div>
+        </div>
+        <span class="badge">${monday.toLocaleDateString('hu-HU')} - ${sunday.toLocaleDateString('hu-HU')}</span>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom:18px">
+        <div class="admin-stat-card"><div class="admin-stat-label">Aktív dolgozók</div><div class="admin-stat-value">${users.filter(u=>!isInactiveProfile(u.status)).length}</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-label">Heti szolgálati idő</div><div class="admin-stat-value">${Math.round(totalMinutes/60)} óra</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-label">Heti szolgálatok</div><div class="admin-stat-value">${weeklyLogs.length}</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-label">Heti jelentések</div><div class="admin-stat-value">${weeklyReports.length}</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div style="font-size:22px;font-weight:900;margin-bottom:12px">Heti szolgálati toplista</div>
+          ${topService.length ? topService.map(([id, minutes], i) => `
+            <div class="leaderboard-item">
+              <div><span class="rank-bubble">${i+1}</span><b>${escapeHtml(userById[id]?.full_name || 'Ismeretlen')}</b><div class="small muted" style="margin-left:46px">${escapeHtml(userById[id]?.rank || '-')}</div></div>
+              <span class="badge">${minutes} perc</span>
+            </div>
+          `).join('') : '<div class="muted">Ezen a héten még nincs szolgálati idő.</div>'}
+        </div>
+        <div class="card">
+          <div style="font-size:22px;font-weight:900;margin-bottom:12px">Heti jelentés toplista</div>
+          ${topReports.length ? topReports.map(([id, count], i) => `
+            <div class="leaderboard-item">
+              <div><span class="rank-bubble">${i+1}</span><b>${escapeHtml(userById[id]?.full_name || 'Ismeretlen')}</b><div class="small muted" style="margin-left:46px">${escapeHtml(userById[id]?.employee_code || '-')}</div></div>
+              <span class="badge">${count} db</span>
+            </div>
+          `).join('') : '<div class="muted">Ezen a héten még nincs jelentés.</div>'}
         </div>
       </div>
     `;
@@ -1091,6 +1719,14 @@ function formatRequestStatus(status) {
       if (state.profile.role === 'admin') {
         if (state.page === 'admin-users') {
           await renderAdminPage();
+          return;
+        }
+
+        if (state.page === 'admin-stats') {
+          const users = await fetchAllProfiles();
+          const logs = await fetchAllServiceLogs();
+          const reports = await fetchAllReports();
+          el('pageRoot').innerHTML = adminStatsHTML(users, logs, reports);
           return;
         }
 
@@ -1107,44 +1743,16 @@ function formatRequestStatus(status) {
 
       if (state.page === 'overview') {
         const reports = await fetchMyReports();
-        el('pageRoot').innerHTML = overviewHTML(state.profile, reports.length);
+        let disciplinaryRecords = [];
+        try { disciplinaryRecords = await fetchMyDisciplinaryRecords(); } catch (_) {}
+        el('pageRoot').innerHTML = overviewHTML(state.profile, reports.length, disciplinaryRecords);
         return;
       }
 
       if (state.page === 'service') {
-        el('pageRoot').innerHTML = serviceFormHTML();
-
-          autoFormatTimeInput(el('serviceStart'));
-          autoFormatTimeInput(el('serviceEnd'));
-
-         el('saveServiceBtn').onclick = async () => {
-          try {
-            const date = el('serviceDate').value;
-            const start = el('serviceStart').value.trim();
-            const end = el('serviceEnd').value.trim();
-            const note = el('serviceNote').value.trim();
-            const minutes = calcMinutes(start, end);
-
-            if (!isValidTimeString(start) || !isValidTimeString(end)) {
-              return el('serviceMsg').innerHTML =
-              '<div class="error">Az időformátum legyen 24 órás, pl. 16:43 vagy 20:23.</div>';
-            }
-
-            await createServiceLog({
-              service_date: date,
-              start_time: start,
-              end_time: end,
-              minutes,
-              note
-            });
-
-            state.profile = await fetchMyProfile();
-            el('serviceMsg').innerHTML = '<div class="success">A szolgálati idő mentve lett.</div>';
-          } catch (err) {
-            el('serviceMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Mentési hiba.')}</div>`;
-          }
-        };
-
+        const logs = await fetchMyServiceLogs();
+        el('pageRoot').innerHTML = serviceFormHTML(logs);
+        bindShiftActions();
         return;
       }
 
@@ -1164,13 +1772,50 @@ function formatRequestStatus(status) {
 
             await createReport({ title, priority, content });
             el('reportMsg').innerHTML = '<div class="success">A jelentés mentve lett.</div>';
+            showToast('Jelentés mentve.', 'success');
             renderCurrentPage();
           } catch (err) {
             el('reportMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Mentési hiba.')}</div>`;
           }
         };
 
-        bindReportOpeners();
+  
+      const addDisciplineBtn = el('addDisciplineBtn');
+      if (addDisciplineBtn && state.selectedAdminUser) {
+        addDisciplineBtn.onclick = async () => {
+          try {
+            const title = el('disciplineTitle').value.trim();
+            const description = el('disciplineDescription').value.trim();
+            const severity = el('disciplineSeverity').value;
+            if (!title || !description) {
+              el('disciplineMsg').innerHTML = '<div class="error">A cím és leírás kötelező.</div>';
+              return;
+            }
+            await createDisciplinaryRecord({ employee_id: state.selectedAdminUser.id, title, description, severity });
+            showToast('Fegyelmi bejegyzés hozzáadva.', 'success');
+            await renderAdminPage();
+          } catch (err) {
+            console.error('fegyelmi mentési hiba:', err);
+            el('disciplineMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Nem sikerült menteni a fegyelmi bejegyzést.')}</div>`;
+          }
+        };
+      }
+
+      qsa('.delete-discipline-btn').forEach(btn => {
+        btn.onclick = async () => {
+          try {
+            if (!(await confirmDialog('Biztosan törlöd ezt a fegyelmi bejegyzést?', 'Fegyelmi törlése'))) return;
+            await deleteDisciplinaryRecord(btn.dataset.id);
+            showToast('Fegyelmi bejegyzés törölve.', 'success');
+            await renderAdminPage();
+          } catch (err) {
+            console.error('fegyelmi törlési hiba:', err);
+            showToast(err.message || 'Nem sikerült törölni.', 'error');
+          }
+        };
+      });
+
+      bindReportOpeners();
         return;
       }
 
@@ -1189,6 +1834,7 @@ function formatRequestStatus(status) {
 
       await createVehicleRequest({ vehicle_type, reason });
       el('vehicleMsg').innerHTML = '<div class="success">Az igénylés mentve lett.</div>';
+      showToast('Járműigénylés beküldve.', 'success');
       renderCurrentPage();
     } catch (err) {
       el('vehicleMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Mentési hiba.')}</div>`;
@@ -1208,19 +1854,51 @@ function formatRequestStatus(status) {
     try {
       const users = await fetchAllProfiles();
 
-      if (!state.selectedAdminUser && users.length) {
-        state.selectedAdminUser = users[0];
+      const filteredUsers = filterAdminUsers(users);
+
+      if (!state.selectedAdminUser && filteredUsers.length) {
+        state.selectedAdminUser = filteredUsers[0];
+      }
+
+      if (state.selectedAdminUser && !users.some(u => u.id === state.selectedAdminUser.id)) {
+        state.selectedAdminUser = filteredUsers[0] || null;
+      }
+
+      if (state.selectedAdminUser && filteredUsers.length && !filteredUsers.some(u => u.id === state.selectedAdminUser.id)) {
+        state.selectedAdminUser = filteredUsers[0];
+      }
+
+      if (!filteredUsers.length && (state.adminUserSearch || state.adminUserRoleFilter !== 'all')) {
+        state.selectedAdminUser = null;
       }
 
       let logs = [];
       let reports = [];
+      let disciplinaryRecords = [];
 
       if (state.selectedAdminUser) {
         logs = await fetchUserServiceLogs(state.selectedAdminUser.id);
         reports = await fetchUserReports(state.selectedAdminUser.id);
+        try { disciplinaryRecords = await fetchUserDisciplinaryRecords(state.selectedAdminUser.id); } catch (err) { console.warn('disciplinary_records nem elérhető:', err); }
       }
 
-      el('pageRoot').innerHTML = adminUsersHTML(users, state.selectedAdminUser, logs, reports);
+      el('pageRoot').innerHTML = adminUsersHTML(users, state.selectedAdminUser, logs, reports, disciplinaryRecords);
+
+      const adminUserSearchInput = el('adminUserSearch');
+      if (adminUserSearchInput) {
+        adminUserSearchInput.oninput = () => {
+          state.adminUserSearch = adminUserSearchInput.value;
+          renderAdminPage();
+        };
+      }
+
+      const adminUserRoleFilter = el('adminUserRoleFilter');
+      if (adminUserRoleFilter) {
+        adminUserRoleFilter.onchange = () => {
+          state.adminUserRoleFilter = adminUserRoleFilter.value;
+          renderAdminPage();
+        };
+      }
 
       qsa('.admin-user-item').forEach(item => {
         item.onclick = () => {
@@ -1228,6 +1906,131 @@ function formatRequestStatus(status) {
           renderCurrentPage();
         };
       });
+
+      const createAdminUserBtn = el('createAdminUserBtn');
+      if (createAdminUserBtn) {
+        createAdminUserBtn.onclick = async () => {
+          try {
+            const fullName = el('adminNewFullName').value.trim();
+            const employeeCode = el('adminNewEmployeeCode').value.trim();
+            const password = el('adminNewPassword').value;
+            const rank = el('adminNewRank').value.trim() || 'Mentődolgozó';
+            const station = el('adminNewStation').value.trim() || 'Nincs megadva';
+            const role = el('adminNewRole').value;
+            if (!fullName || !employeeCode || !password) return el('adminCreateUserMsg').innerHTML = '<div class="error">A név, dolgozókód és kezdő jelszó kötelező.</div>';
+            if (password.length < 6) return el('adminCreateUserMsg').innerHTML = '<div class="error">A jelszó legalább 6 karakter legyen.</div>';
+            const result = await adminCreateUser({ fullName, employeeCode, password, rank, station, role });
+            el('adminCreateUserMsg').innerHTML = '<div class="success">Felhasználó létrehozva. Belépési email: ' + escapeHtml(result.email || '') + '</div>';
+            showToast('Felhasználó létrehozva.', 'success');
+            state.selectedAdminUser = null;
+            await renderAdminPage();
+          } catch (err) {
+            console.error('admin felhasználó létrehozási hiba:', err);
+            el('adminCreateUserMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Nem sikerült létrehozni a felhasználót.')}</div>`;
+          }
+        };
+      }
+
+      const setAdminPasswordBtn = el('setAdminPasswordBtn');
+      if (setAdminPasswordBtn && state.selectedAdminUser) {
+        setAdminPasswordBtn.onclick = async () => {
+          try {
+            const newPassword = el('adminNewPasswordForSelected').value;
+            if (!newPassword || newPassword.length < 6) return el('adminAccountMsg').innerHTML = '<div class="error">Az új jelszó legalább 6 karakter legyen.</div>';
+            await adminSetUserPassword(state.selectedAdminUser.id, newPassword);
+            el('adminNewPasswordForSelected').value = '';
+            el('adminAccountMsg').innerHTML = '<div class="success">A jelszó módosítva lett.</div>';
+            showToast('Jelszó módosítva.', 'success');
+          } catch (err) {
+            console.error('admin jelszó módosítási hiba:', err);
+            el('adminAccountMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Nem sikerült módosítani a jelszót.')}</div>`;
+          }
+        };
+      }
+
+      const toggleAdminUserStatusBtn = el('toggleAdminUserStatusBtn');
+      if (toggleAdminUserStatusBtn && state.selectedAdminUser) {
+        toggleAdminUserStatusBtn.onclick = async () => {
+          try {
+            if (state.selectedAdminUser.id === state.user.id) {
+              el('adminAccountMsg').innerHTML = '<div class="error">Saját admin fiókodat innen nem inaktiválhatod.</div>';
+              return;
+            }
+
+            const currentInactive = isInactiveProfile(state.selectedAdminUser.status);
+            const newStatus = currentInactive ? 'Aktív' : 'Inaktív';
+            const confirmText = currentInactive
+              ? 'Biztosan visszaaktiválod ezt a felhasználót?'
+              : 'Biztosan inaktiválod ezt a felhasználót? Inaktív státusszal nem tudja használni a dolgozói portált.';
+
+            if (!(await confirmDialog(confirmText, 'Státusz módosítása'))) return;
+
+            state.selectedAdminUser = await updateProfileAdmin(state.selectedAdminUser.id, { status: newStatus });
+            el('adminAccountMsg').innerHTML = `<div class="success">A felhasználó státusza módosítva lett: ${escapeHtml(newStatus)}.</div>`;
+            await renderAdminPage();
+          } catch (err) {
+            console.error('admin státusz módosítási hiba:', err);
+            el('adminAccountMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Nem sikerült módosítani a státuszt.')}</div>`;
+          }
+        };
+      }
+
+      const deleteAdminUserBtn = el('deleteAdminUserBtn');
+      if (deleteAdminUserBtn && state.selectedAdminUser) {
+        deleteAdminUserBtn.onclick = async () => {
+          try {
+            if (state.selectedAdminUser.id === state.user.id) return el('adminAccountMsg').innerHTML = '<div class="error">Saját admin fiókodat innen nem törölheted.</div>';
+            if (!(await confirmDialog('Biztosan törlöd ezt a felhasználót? Ez a bejelentkezési fiókot is törli.', 'Felhasználó törlése'))) return;
+            await adminDeleteUser(state.selectedAdminUser.id);
+            showToast('Felhasználó törölve.', 'success');
+            state.selectedAdminUser = null;
+            await renderAdminPage();
+          } catch (err) {
+            console.error('admin felhasználó törlési hiba:', err);
+            el('adminAccountMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Nem sikerült törölni a felhasználót.')}</div>`;
+          }
+        };
+      }
+
+      const saveAdminUserBtn = el('saveAdminUserBtn');
+      if (saveAdminUserBtn && state.selectedAdminUser) {
+        saveAdminUserBtn.onclick = async () => {
+          try {
+            const weeklyMinutesRaw = el('adminEditWeeklyMinutes').value;
+            const weeklyMinutes = Number.parseInt(weeklyMinutesRaw, 10);
+
+            if (Number.isNaN(weeklyMinutes) || weeklyMinutes < 0) {
+              el('adminEditMsg').innerHTML = '<div class="error">A heti percek csak 0 vagy annál nagyobb szám lehet.</div>';
+              return;
+            }
+
+            const payload = {
+              full_name: el('adminEditFullName').value.trim(),
+              employee_code: el('adminEditEmployeeCode').value.trim(),
+              rank: el('adminEditRank').value.trim(),
+              status: el('adminEditStatus').value.trim(),
+              station: el('adminEditStation').value.trim(),
+              assigned_vehicle: el('adminEditAssignedVehicle').value.trim(),
+              weekly_minutes: weeklyMinutes,
+              role: el('adminEditRole').value
+            };
+
+            if (!payload.full_name) {
+              el('adminEditMsg').innerHTML = '<div class="error">A teljes név nem lehet üres.</div>';
+              return;
+            }
+
+            state.selectedAdminUser = await updateProfileAdmin(state.selectedAdminUser.id, payload);
+            state.profile = await fetchMyProfile();
+            el('adminEditMsg').innerHTML = '<div class="success">A dolgozói adatok mentve lettek.</div>';
+            showToast('Dolgozói adatok mentve.', 'success');
+            await renderAdminPage();
+          } catch (err) {
+            console.error('admin profil mentési hiba:', err);
+            el('adminEditMsg').innerHTML = `<div class="error">${escapeHtml(err.message || 'Nem sikerült menteni a dolgozói adatokat.')}</div>`;
+          }
+        };
+      }
 
       bindReportOpeners();
     } catch (err) {
@@ -1389,29 +2192,6 @@ function formatRequestStatus(status) {
       .replaceAll('>', '&gt;')
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#039;');
-  }
-
-  async function adminCreateUser({
-    fullName,
-    password,
-    employeeCode = '',
-    rank = 'Mentődolgozó',
-    station = 'Nincs megadva'
-  }) {
-    const { data, error } = await sb.functions.invoke('create-user', {
-      body: {
-        fullName,
-        password,
-        employeeCode,
-        rank,
-        station
-      }
-    });
-
-    if (error) throw error;
-    if (data?.error) throw new Error(data.error);
-
-    return data;
   }
 
   el('modeUserBtn').onclick = () => setMode('user');
