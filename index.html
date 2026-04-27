@@ -457,6 +457,8 @@
         </div>
 
         <div class="logout-wrap">
+          <button id="adminPanelSwitchBtn" class="btn btn-secondary hidden" style="width:100%;margin-bottom:10px">Váltás Vezetőség Panelre</button>
+          <button id="employeePanelSwitchBtn" class="btn btn-secondary hidden" style="width:100%;margin-bottom:10px">Váltás Dolgozói Felületre</button>
           <button id="logoutBtn" class="btn btn-danger" style="width:100%">Kijelentkezés</button>
         </div>
       </aside>
@@ -947,22 +949,30 @@
     el('appView').classList.remove('hidden');
 
     const isAdmin = state.profile.role === 'admin';
+    const isAdminPanel = isAdmin && String(state.page || '').startsWith('admin-');
 
-    el('sidebarSubtitle').textContent = isAdmin ? 'OMSZ ADMIN' : 'OMSZ';
-    el('sidebarTitle').textContent = isAdmin ? 'Admin felület' : 'Dolgozói portál';
+    el('sidebarSubtitle').textContent = isAdminPanel ? 'OMSZ ADMIN' : 'OMSZ';
+    el('sidebarTitle').textContent = isAdminPanel ? 'Admin felület' : 'Dolgozói portál';
     el('sidebarUserName').textContent = state.profile.full_name || '-';
     el('sidebarUserRole').textContent = state.profile.rank || (isAdmin ? 'Rendszergazda' : 'Dolgozó');
     el('sidebarStatus').textContent = state.profile.status || (isAdmin ? 'Admin' : 'Aktív');
-    el('topbarType').textContent = isAdmin ? 'Rendszergazda rendszer' : 'Belső rendszer';
+    el('topbarType').textContent = isAdminPanel ? 'Rendszergazda rendszer' : 'Belső rendszer';
     el('topbarGreeting').textContent = `Üdv, ${state.profile.full_name || 'Felhasználó'}`;
-    el('stationBadge').textContent = isAdmin ? 'Teljes hozzáférés' : (state.profile.station || 'Nincs megadva');
+    el('stationBadge').textContent = isAdminPanel ? 'Teljes hozzáférés' : (state.profile.station || 'Nincs megadva');
 
-    el('userNav').classList.toggle('hidden', isAdmin);
-    el('adminNav').classList.toggle('hidden', !isAdmin);
+    el('userNav').classList.toggle('hidden', isAdminPanel);
+    el('adminNav').classList.toggle('hidden', !isAdminPanel);
 
-    if (isAdmin && !String(state.page).startsWith('admin-')) {
-      state.page = 'admin-users';
+    const switchBtn = el('adminPanelSwitchBtn');
+    if (switchBtn) {
+      switchBtn.classList.toggle('hidden', !isAdmin || isAdminPanel);
     }
+
+    const employeeSwitchBtn = el('employeePanelSwitchBtn');
+    if (employeeSwitchBtn) {
+      employeeSwitchBtn.classList.toggle('hidden', !isAdmin || !isAdminPanel);
+    }
+
     if (!isAdmin && String(state.page).startsWith('admin-')) {
       state.page = 'overview';
     }
@@ -973,11 +983,35 @@
   function bindNavByRole() {
     qsa('.nav-btn').forEach(btn => {
       btn.onclick = () => {
+        if (String(btn.dataset.page || '').startsWith('admin-') && state.profile?.role !== 'admin') {
+          showToast('Ehhez nincs vezetőségi jogosultságod.', 'error');
+          return;
+        }
         state.page = btn.dataset.page;
-        highlightActiveNav();
+        showApp();
         renderCurrentPage();
       };
     });
+
+    const switchBtn = el('adminPanelSwitchBtn');
+    if (switchBtn) {
+      switchBtn.onclick = () => {
+        if (state.profile?.role !== 'admin') return;
+        state.page = 'admin-users';
+        showApp();
+        renderCurrentPage();
+      };
+    }
+
+    const employeeSwitchBtn = el('employeePanelSwitchBtn');
+    if (employeeSwitchBtn) {
+      employeeSwitchBtn.onclick = () => {
+        if (state.profile?.role !== 'admin') return;
+        state.page = 'overview';
+        showApp();
+        renderCurrentPage();
+      };
+    }
   }
 
   function highlightActiveNav() {
@@ -1030,6 +1064,7 @@
       state.user = null;
       state.selectedAdminUser = null;
       state.modalReport = null;
+      state.page = 'overview';
 
       showLogin();
       setLoginMessage('success', 'Sikeres kijelentkezés.');
